@@ -1,5 +1,10 @@
 # Slay the Robots
 
+<p align="center">
+  <a href="./README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
+  <a href="./README_zh.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red?style=for-the-badge" alt="简体中文"></a>
+</p>
+
 一款基于 Godot 4.6 的 Roguelike 卡牌构筑游戏，核心机制为 **词条组合（trait-composition）**。
 每张卡牌由若干可复用的小型 *词条*（伤害 / 格挡 / 灼烧 / 共振 / ……）组合而成，
 词条在结算过程中可彼此触发反应，从而衍生出涌现式连锁组合。

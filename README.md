@@ -1,5 +1,10 @@
 # Slay the Robots
 
+<p align="center">
+  <a href="./README.md"><img src="https://img.shields.io/badge/Lang-English-blue?style=for-the-badge" alt="English"></a>
+  <a href="./README_zh.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red?style=for-the-badge" alt="简体中文"></a>
+</p>
+
 A Godot 4.6 roguelike deck-builder built on a **trait-composition** card system.
 Each card is composed of small reusable *traits* (Damage / Block / Burn / Resonate / …),
 and those traits can react to one another mid-resolution, producing emergent combos.
