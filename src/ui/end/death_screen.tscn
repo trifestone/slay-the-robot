@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3c4death_screen"]
+
+[ext_resource type="Script" path="res://ui/end/death_screen.gd" id="1_death_screen"]
+
+[node name="DeathScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_death_screen")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.02, 0.04, 1)
+
+[node name="V" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -220.0
+offset_right = 260.0
+offset_bottom = 220.0
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="V"]
+text = "Defeat"
+horizontal_alignment = 1
+modulate = Color(0.95, 0.45, 0.45, 1)
+
+[node name="Summary" type="RichTextLabel" parent="V"]
+custom_minimum_size = Vector2(520, 120)
+bbcode_enabled = true
+fit_content = true
+
+[node name="UnlocksList" type="VBoxContainer" parent="V"]
+custom_minimum_size = Vector2(520, 160)
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="ReturnBtn" type="Button" parent="V"]
+custom_minimum_size = Vector2(520, 40)
+text = "Return to Menu"

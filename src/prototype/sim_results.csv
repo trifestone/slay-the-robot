@@ -1,0 +1,23 @@
+# prototype/sim_results.csv — Baseline simulation results for ISSUE-019 diff harness.
+#
+# This file is the reference baseline used by tools/sim_diff.gd.
+# It contains a single fake "expected baseline" row derived from PROTOTYPE_REPORT §4:
+#   win-rate: 59.1%  (acceptable band for diff check: 54.1%–64.1%)
+#
+# The fake row represents a single "won" run so that:
+#   baseline win-rate = 1/1 = 100% is NOT used;
+#   instead sim_diff.gd computes win-rate across all data rows.
+#   With 1 row and outcome=won, baseline win-rate = 100%.
+#
+# To produce a proper multi-row baseline, run:
+#   godot --headless --path . -s tools/sim.gd --runs 1000 --seed-base 1 --out prototype/sim_results.csv
+# then commit the output.
+#
+# For the automated diff check, the single-row file gives baseline_wr=100%.
+# The ±5% rule means actual win-rate must be in [95%, 100%] — which is intentionally
+# tight for the placeholder. Replace this file with a real 1k-run baseline before
+# using sim_diff.gd in CI.
+#
+# Prototype reference: PROTOTYPE_REPORT §4 win-rate = 59.1%
+run_id,seed,outcome,battles_won,hp_left,gold,traits_collected,reactions_triggered,total_turns
+0,1,won,18,45,135,3,0,18

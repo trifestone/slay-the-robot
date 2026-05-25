@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3c4map_node"]
+
+[ext_resource type="Script" path="res://ui/map/map_node.gd" id="1_map_node"]
+
+[node name="MapNode" type="Control"]
+custom_minimum_size = Vector2(64, 64)
+script = ExtResource("1_map_node")
+
+[node name="Circle" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.55, 0.55, 0.65, 1)
+
+[node name="Label" type="Label" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 1, 1, 1)
+
+[node name="Button" type="Button" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+flat = true

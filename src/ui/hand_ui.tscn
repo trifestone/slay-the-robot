@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3d4hand_ui"]
+
+[ext_resource type="Script" path="res://ui/hand_ui.gd" id="1_hand_ui"]
+
+[node name="HandUI" type="Control"]
+mouse_filter = 2
+script = ExtResource("1_hand_ui")
+
+[node name="Row" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2

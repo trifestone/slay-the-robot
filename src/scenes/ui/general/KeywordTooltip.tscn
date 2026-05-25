@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://c011lbubcpo0t"]
+
+[ext_resource type="Theme" uid="uid://2714jm71pkv4" path="res://themes/keyword_tooltip_theme.tres" id="1_gdcnl"]
+[ext_resource type="Script" uid="uid://cks4rsneoyf8v" path="res://scripts/ui/general/KeywordTooltip.gd" id="2_tcn0y"]
+
+[node name="KeywordTooltip" type="PanelContainer"]
+self_modulate = Color(0.392157, 0.392157, 0.392157, 1)
+custom_minimum_size = Vector2(240, 0)
+offset_left = 384.0
+offset_top = 320.0
+offset_right = 624.0
+offset_bottom = 357.0
+theme = ExtResource("1_gdcnl")
+script = ExtResource("2_tcn0y")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 2
+theme = ExtResource("1_gdcnl")
+bbcode_enabled = true
+text = "[color=Orange][Keyword][/color] description here"
+fit_content = true
+scroll_active = false

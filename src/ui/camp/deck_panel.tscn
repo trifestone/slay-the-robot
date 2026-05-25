@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3c4deck_panel"]
+
+[ext_resource type="Script" path="res://ui/camp/deck_panel.gd" id="1_deck_panel"]
+
+[node name="DeckPanel" type="Control"]
+custom_minimum_size = Vector2(880, 400)
+script = ExtResource("1_deck_panel")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.06, 0.07, 0.10, 0.85)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 12.0
+offset_top = 4.0
+offset_right = 200.0
+offset_bottom = 28.0
+text = "Deck"
+modulate = Color(0.9, 0.9, 0.9, 1)
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 32.0
+offset_right = -8.0
+offset_bottom = -8.0
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
+
+[node name="Row" type="HBoxContainer" parent="Scroll"]
+theme_override_constants/separation = 12

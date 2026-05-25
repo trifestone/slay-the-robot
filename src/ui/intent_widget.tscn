@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4e5intent"]
+
+[ext_resource type="Script" path="res://ui/intent_widget_view.gd" id="1_intent"]
+
+[node name="IntentWidget" type="Control"]
+custom_minimum_size = Vector2(80, 56)
+script = ExtResource("1_intent")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.85, 0.30, 0.20, 1)
+
+[node name="Icon" type="Label" parent="."]
+offset_left = 4.0
+offset_top = 2.0
+offset_right = 76.0
+offset_bottom = 22.0
+text = "ATK"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="Label" type="Label" parent="."]
+offset_left = 4.0
+offset_top = 22.0
+offset_right = 76.0
+offset_bottom = 54.0
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 1, 1, 1)

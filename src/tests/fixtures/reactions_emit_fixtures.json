@@ -1,0 +1,9 @@
+[
+  {
+    "id": "shield_resonance",
+    "watch_for": ["reaction_shield_a", "reaction_shield_b"],
+    "timing": "OnPlay",
+    "override_effect": "Damage(20, Iron) + Block(5)",
+    "flavor": "Fixture: reaction that overrides two shield traits."
+  }
+]

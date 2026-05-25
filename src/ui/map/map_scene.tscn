@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3c4map_scene"]
+
+[ext_resource type="Script" path="res://ui/map/map_scene.gd" id="1_map_scene"]
+
+[node name="MapScene" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_map_scene")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.04, 0.05, 0.08, 1)
+
+[node name="Header" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 36.0
+
+[node name="Title" type="Label" parent="Header"]
+text = "Map"
+size_flags_horizontal = 3
+modulate = Color(1, 0.95, 0.7, 1)
+
+[node name="Legend" type="Label" parent="."]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -32.0
+offset_right = -16.0
+offset_bottom = -8.0
+text = ""
+modulate = Color(0.7, 0.7, 0.8, 1)
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 48.0
+offset_right = -16.0
+offset_bottom = -40.0
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 2
+
+[node name="Canvas" type="Control" parent="Scroll"]
+custom_minimum_size = Vector2(800, 800)

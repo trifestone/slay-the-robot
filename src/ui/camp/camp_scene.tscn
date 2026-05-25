@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://cr7koxlcvwwki"]
+
+[ext_resource type="Script" uid="uid://jh2h6xr54lid" path="res://ui/camp/camp_scene.gd" id="1_camp_scene"]
+
+[node name="CampScene" type="Control" unique_id=2064106340]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_camp_scene")
+
+[node name="Bg" type="ColorRect" parent="." unique_id=1016626690]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.04, 0.05, 0.08, 1)
+
+[node name="Layout" type="HBoxContainer" parent="." unique_id=432386178]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+theme_override_constants/separation = 16
+
+[node name="DeckHost" type="Control" parent="Layout" unique_id=222063459]
+custom_minimum_size = Vector2(900, 600)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Sidebar" type="Control" parent="Layout" unique_id=1626095421]
+custom_minimum_size = Vector2(280, 600)
+layout_mode = 2
+
+[node name="Stats" type="VBoxContainer" parent="Layout/Sidebar" unique_id=42634828]
+layout_mode = 0
+offset_right = 360.0
+offset_bottom = 50.0
+theme_override_constants/separation = 4
+
+[node name="Gold" type="Label" parent="Layout/Sidebar/Stats" unique_id=1635803259]
+layout_mode = 2
+text = "Gold: 0"
+
+[node name="Dismantle" type="Label" parent="Layout/Sidebar/Stats" unique_id=176127928]
+layout_mode = 2
+text = "Dismantle: 0"
+
+[node name="InventoryHost" type="Control" parent="Layout/Sidebar" unique_id=313550115]
+custom_minimum_size = Vector2(270, 200)
+anchors_preset = 0
+offset_top = 62.0
+offset_right = 270.0
+offset_bottom = 624.0
+size_flags_vertical = 3
+
+[node name="LeaveBtn" type="Button" parent="Layout/Sidebar" unique_id=1098192572]
+custom_minimum_size = Vector2(270, 40)
+layout_mode = 0
+offset_top = 636.0
+offset_right = 270.0
+offset_bottom = 676.0
+pivot_offset = Vector2(452, -2)
+text = "Leave Camp"
+
+[node name="Toast" type="Label" parent="." unique_id=1027754162]
+visible = false
+modulate = Color(1, 0.95, 0.7, 1)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -64.0
+offset_right = 160.0
+offset_bottom = -32.0
+horizontal_alignment = 1
+vertical_alignment = 1

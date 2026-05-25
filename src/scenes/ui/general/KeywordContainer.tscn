@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://daimkj082tvn0"]
+
+[ext_resource type="Theme" uid="uid://2714jm71pkv4" path="res://themes/keyword_tooltip_theme.tres" id="1_c01cj"]
+[ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="2_rj6rc"]
+
+[node name="KeywordContainer" type="VBoxContainer"]
+self_modulate = Color(0.392157, 0.392157, 0.392157, 1)
+z_index = 20
+custom_minimum_size = Vector2(240, 0)
+offset_left = 384.0
+offset_top = 320.0
+offset_right = 624.0
+offset_bottom = 357.0
+mouse_filter = 2
+theme = ExtResource("1_c01cj")
+script = ExtResource("2_rj6rc")

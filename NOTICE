@@ -1,0 +1,60 @@
+NOTICE
+======
+MyGame (working title) — a Slay-The-Robot fork roguelike card game.
+This file enumerates third-party components used in this project.
+
+------------------------------------------------------------------------
+1. Slay-The-Robot (upstream template)
+------------------------------------------------------------------------
+Copyright (c) 2025 DesirePathGames
+License   : MIT
+Source    : https://github.com/DesirePathGames/Slay-The-Robot
+Fork SHA  : 5170758dcf9d07a49c0bfd3e336384289b9b1ad5
+Fork date : 2026-05-19
+
+The original MIT license text is preserved verbatim at src/LICENSE.
+
+------------------------------------------------------------------------
+2. GdUnit4
+------------------------------------------------------------------------
+Copyright (c) Mike Schulze and contributors
+License   : MIT
+Source    : https://github.com/MikeSchulze/gdUnit4
+Version   : 6.1.3
+Vendored  : src/addons/gdUnit4/
+
+Used as the unit testing framework (dev/test dependency only).
+
+------------------------------------------------------------------------
+3. godot-state-charts
+------------------------------------------------------------------------
+Status    : not yet vendored, will add when imported
+License   : TBD — will be confirmed and listed here upon import
+Source    : https://github.com/derkork/godot-state-charts (anticipated)
+Version   : TBD
+
+------------------------------------------------------------------------
+4. Godot Engine
+------------------------------------------------------------------------
+Copyright (c) 2014-present Godot Engine contributors
+Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur
+License   : MIT
+Source    : https://github.com/godotengine/godot
+Version   : 4.6.2.stable.official.71f334935
+
+This project runs on the Godot Engine runtime but does not ship the
+engine binary. End users must obtain the engine separately.
+Full license text: https://github.com/godotengine/godot/blob/master/LICENSE.md
+
+------------------------------------------------------------------------
+5. Fonts / Audio / Art Assets
+------------------------------------------------------------------------
+Status    : TBD — placeholder phase
+All font, audio, and visual art assets are currently placeholder or
+not yet sourced. Final attribution will be listed here before any
+public release. No third-party assets have been incorporated as of
+2026-05-20.
+
+------------------------------------------------------------------------
+END OF NOTICE
+------------------------------------------------------------------------

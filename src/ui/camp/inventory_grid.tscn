@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3c4inventory_grid"]
+
+[ext_resource type="Script" path="res://ui/camp/inventory_grid.gd" id="1_inventory_grid"]
+
+[node name="InventoryGrid" type="Control"]
+custom_minimum_size = Vector2(360, 200)
+script = ExtResource("1_inventory_grid")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.06, 0.07, 0.10, 0.85)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 12.0
+offset_top = 4.0
+offset_right = 200.0
+offset_bottom = 28.0
+text = "Inventory"
+modulate = Color(0.9, 0.9, 0.9, 1)
+
+[node name="Capacity" type="Label" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -80.0
+offset_top = 4.0
+offset_right = -8.0
+offset_bottom = 28.0
+text = "0/5"
+horizontal_alignment = 2
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="Grid" type="GridContainer" parent="."]
+offset_left = 12.0
+offset_top = 36.0
+offset_right = 348.0
+offset_bottom = 188.0
+columns = 5
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8

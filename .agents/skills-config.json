@@ -1,0 +1,17 @@
+{
+  "issueTracker": {
+    "type": "local-markdown",
+    "path": "docs/issues/",
+    "filenameFormat": "ISSUE-{nnn}-{slug}.md"
+  },
+  "triageLabels": {
+    "kind": ["bug", "enhancement"],
+    "status": ["needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "wontfix"],
+    "agent": ["AFK", "HITL"]
+  },
+  "docs": {
+    "context": "docs/CONTEXT.md",
+    "adr": "docs/adr/",
+    "prd": "docs/prd/"
+  }
+}

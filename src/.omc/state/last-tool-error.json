@@ -1,0 +1,7 @@
+{
+  "tool_name": "PowerShell",
+  "tool_input_preview": "{\"command\":\"$env:Path = [System.Environment]::GetEnvironmentVariable(\\\"Path\\\",\\\"User\\\") + \\\";\\\" + [System.Environment]::GetEnvironmentVariable(\\\"Path\\\",\\\"Machine\\\"); & godot --headless --path \\\"C:/Use...",
+  "error": "Exit code 103\nGodot Engine v4.6.2.stable.official.71f334935 - https://godotengine.org\r\n\r\n\u001b[38;2;255;255;0mFileLoader: To enable external file loading in builds, download an export template and add the custom feature tag \"exported\" to the export. See https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html\u001b[39m\u001b[0m\r\n\u001b[38;2;173;216;230mDebug Base Directory: res://\u001b[39m\u001b[0m\r\n\u001b[2J\u001b[H\u001b[38;2;233;150;122m\r\n--------------------------------------------------------------------------------...",
+  "timestamp": "2026-05-20T09:57:47.639Z",
+  "retry_count": 2
+}

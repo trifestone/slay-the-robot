@@ -1,0 +1,14 @@
+[
+  {"id": "skeleton_grunt",    "tier": "normal", "intent": "Attack", "intent_damage": 5, "carried_traits": ["flame_brand"], "drop_count": 1},
+  {"id": "goblin_rogue",      "tier": "normal", "intent": "Attack", "intent_damage": 5, "carried_traits": ["oil_slick"],   "drop_count": 1},
+  {"id": "slime_blob",        "tier": "normal", "intent": "Attack", "intent_damage": 5, "carried_traits": ["lunar_echo"],  "drop_count": 1},
+  {"id": "bat_swarm",         "tier": "normal", "intent": "Attack", "intent_damage": 5, "carried_traits": ["bone_harvest"],"drop_count": 1},
+  {"id": "cursed_armor",      "tier": "normal", "intent": "Attack", "intent_damage": 5, "carried_traits": ["void_consume"],"drop_count": 1},
+  {"id": "plague_rat",        "tier": "normal", "intent": "Attack", "intent_damage": 5, "carried_traits": ["flame_brand"], "drop_count": 1},
+  {"id": "bone_knight",       "tier": "elite",  "intent": "Attack", "intent_damage": 5, "carried_traits": ["bone_harvest","flame_brand"],  "drop_count": 2},
+  {"id": "void_stalker",      "tier": "elite",  "intent": "Attack", "intent_damage": 5, "carried_traits": ["void_consume","oil_slick"],    "drop_count": 2},
+  {"id": "moon_witch",        "tier": "elite",  "intent": "Attack", "intent_damage": 5, "carried_traits": ["lunar_echo","bone_harvest"],   "drop_count": 2},
+  {"id": "abyssal_titan",     "tier": "boss",   "intent": "Attack", "intent_damage": 5, "carried_traits": ["void_consume","flame_brand","oil_slick"],  "drop_count": 3},
+  {"id": "dread_lich",        "tier": "boss",   "intent": "Attack", "intent_damage": 5, "carried_traits": ["bone_harvest","lunar_echo","void_consume"],"drop_count": 3},
+  {"id": "world_eater",       "tier": "boss",   "intent": "Attack", "intent_damage": 5, "carried_traits": ["flame_brand","lunar_echo","bone_harvest"], "drop_count": 3}
+]

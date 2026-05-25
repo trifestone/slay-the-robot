@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3 uid="uid://b5e6enemyui"]
+
+[ext_resource type="Script" path="res://ui/enemy_ui.gd" id="1_enemy_ui"]
+
+[node name="EnemyUI" type="Control"]
+custom_minimum_size = Vector2(180, 260)
+script = ExtResource("1_enemy_ui")
+
+[node name="IntentSlot" type="Control" parent="."]
+offset_left = 50.0
+offset_top = 4.0
+offset_right = 130.0
+offset_bottom = 60.0
+
+[node name="Body" type="Control" parent="."]
+offset_left = 30.0
+offset_top = 64.0
+offset_right = 150.0
+offset_bottom = 184.0
+mouse_filter = 2
+
+[node name="BodyBg" type="ColorRect" parent="Body"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.35, 0.20, 0.30, 1)
+mouse_filter = 2
+
+[node name="BodySprite" type="TextureRect" parent="Body"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand_mode = 3
+mouse_filter = 2
+
+[node name="HpLabel" type="Label" parent="."]
+offset_left = 0.0
+offset_top = 188.0
+offset_right = 180.0
+offset_bottom = 208.0
+text = "0 / 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HpBar" type="ProgressBar" parent="."]
+offset_left = 8.0
+offset_top = 210.0
+offset_right = 172.0
+offset_bottom = 222.0
+max_value = 1.0
+show_percentage = false
+
+[node name="TraitRow" type="HBoxContainer" parent="."]
+offset_left = 4.0
+offset_top = 226.0
+offset_right = 176.0
+offset_bottom = 256.0
+theme_override_constants/separation = 4
+alignment = 1

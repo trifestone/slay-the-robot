@@ -1,0 +1,198 @@
+[gd_scene load_steps=7 format=3 uid="uid://528isoebkdpv"]
+
+[ext_resource type="Script" uid="uid://d4l5y1jvle1mq" path="res://scripts/combatants/Enemy.gd" id="1_10iyf"]
+[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="2_x4bdi"]
+[ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_nimvv"]
+
+[sub_resource type="Animation" id="Animation_3iu6k"]
+resource_name = "attack"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visible/Sprite:offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-30, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_8wuxe"]
+resource_name = "death"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visible/Intent:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Visible/Sprite:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Visible:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_death_animtation_finished"
+}]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Visible/StatusContainer:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.1, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_8y6d7"]
+_data = {
+&"attack": SubResource("Animation_3iu6k"),
+&"death": SubResource("Animation_8wuxe")
+}
+
+[node name="Enemy" type="Control" groups=["enemies", "enemies_alive_or_dead"]]
+custom_minimum_size = Vector2(200, 144)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 192.0
+mouse_filter = 2
+script = ExtResource("1_10iyf")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_8y6d7")
+}
+
+[node name="Visible" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="Sprite" type="Sprite2D" parent="Visible"]
+position = Vector2(99, 128)
+texture = ExtResource("2_x4bdi")
+
+[node name="NameLabel" type="Label" parent="Visible/Sprite"]
+visible = false
+offset_left = -75.0
+offset_top = 48.0
+offset_right = 77.0
+offset_bottom = 71.0
+theme_override_font_sizes/font_size = 15
+text = "Name"
+horizontal_alignment = 1
+
+[node name="LayeredHealthBar" parent="Visible/Sprite" instance=ExtResource("3_nimvv")]
+
+[node name="SelectionButton" type="Button" parent="Visible/Sprite"]
+self_modulate = Color(1, 1, 1, 0)
+offset_left = -67.0
+offset_top = -64.0
+offset_right = 69.0
+offset_bottom = 64.0
+
+[node name="Intent" type="Control" parent="Visible"]
+visible = false
+anchors_preset = 0
+offset_top = 24.0
+offset_right = 200.0
+offset_bottom = 48.0
+mouse_filter = 2
+
+[node name="IntentTexture" type="TextureRect" parent="Visible/Intent"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = -16.0
+offset_right = 120.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("2_x4bdi")
+expand_mode = 1
+
+[node name="IntentAmount" type="Label" parent="Visible/Intent"]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 8.0
+offset_right = 144.0
+offset_bottom = 31.0
+text = "15"
+
+[node name="FadeContainer" type="Node2D" parent="Visible"]
+position = Vector2(100, -8)
+
+[node name="Block" type="Sprite2D" parent="Visible"]
+visible = false
+self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
+position = Vector2(32, 168)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_x4bdi")
+metadata/_edit_group_ = true
+
+[node name="BlockAmount" type="Label" parent="Visible/Block"]
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+theme_override_font_sizes/font_size = 48
+text = "999"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusContainer" type="GridContainer" parent="Visible"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 224.0
+offset_right = 184.0
+offset_bottom = 264.0
+columns = 6
+
+[node name="CustomUIContainer" type="Control" parent="Visible"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2

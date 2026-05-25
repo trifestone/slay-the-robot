@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo *)",
+      "Bash(ls C:Userszuolei01DocumentsMyGamesrc 2 *)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Name, LastWriteTime)",
+      "Bash(Format-Table)",
+      "PowerShell(pwsh -File \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\tools\\\\check_license.ps1\"; Write-Host \"Exit code: $LASTEXITCODE\")",
+      "PowerShell(New-Item *)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); cd C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame; & .\\\\tools\\\\check_license.ps1; \"EXIT=$LASTEXITCODE\")",
+      "PowerShell(godot *)",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); cd C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src; foreach\\($t in @\\('test_data_model.gd','test_emit_core.gd','test_reactions.gd','perf_emit_scale.gd'\\)\\) { Write-Host \"=== $t ===\"; godot --headless --display-driver headless --audio-driver Dummy -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a \"res://tests/$t\" 2>&1 | Select-String -Pattern 'Statistics|Exit code'; })",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src\\\\tests\\\\golden\")",
+      "Bash(Out-Null)",
+      "Bash(Write-Host \"done\")",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); cd C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src; foreach\\($t in @\\('test_data_model.gd','test_emit_core.gd','test_reactions.gd','perf_emit_scale.gd','test_battle_loop.gd'\\)\\) { Write-Host \"=== $t ===\"; godot --headless --display-driver headless --audio-driver Dummy -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a \"res://tests/$t\" 2>&1 | Select-String -Pattern 'Statistics|Exit code|Parse Error|FAILED|ERROR' | Select-Object -First 10; })",
+      "Bash(godot --headless --display-driver headless --audio-driver Dummy -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a \"res://tests/test_battle_loop.gd\")",
+      "PowerShell(Test-Path *)",
+      "PowerShell(& \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\tools\\\\check_license.ps1\")",
+      "Bash(where python *)",
+      "PowerShell(python \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src\\\\validate_traits.py\")",
+      "PowerShell(python \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src\\\\validate_reactions.py\")",
+      "PowerShell(Get-Content *)",
+      "Bash(which godot *)",
+      "Bash(command -v godot)",
+      "PowerShell(Get-Command *)",
+      "Bash(dir docs *)",
+      "Bash(dir /s /b docs\\\\issues)"
+    ]
+  }
+}

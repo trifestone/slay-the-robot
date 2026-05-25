@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/c/Users/zuolei01/AppData/Local/Microsoft/WinGet/Links/godot.exe --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_map_generator.gd)",
+      "Bash(/c/Users/zuolei01/AppData/Local/Microsoft/WinGet/Links/godot.exe --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests/test_map_generator.gd)",
+      "Bash(where godot *)",
+      "Bash(where godot4 *)",
+      "Bash(godot --version)",
+      "Bash(./addons/gdUnit4/runtest.cmd --ignoreHeadlessMode -a res://tests)",
+      "PowerShell(& \"C:\\\\Users\\\\zuolei01\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Links\\\\godot.exe\" --version)",
+      "PowerShell($ErrorActionPreference='Continue'; & \"C:\\\\Users\\\\zuolei01\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Links\\\\godot.exe\" --headless --path \"C:\\\\Users\\\\zuolei01\\\\Documents\\\\MyGame\\\\src\" -s \"addons/gdUnit4/bin/GdUnitCmdTool.gd\" -a \"res://tests\" 2>&1 | Select-Object -Last 80)",
+      "Bash(\"/c/Users/zuolei01/AppData/Local/Microsoft/WinGet/Links/godot.exe\" --headless --path \"C:/Users/zuolei01/Documents/MyGame/src\" -s \"addons/gdUnit4/bin/GdUnitCmdTool.gd\" -a \"res://tests\" --ignoreHeadlessMode)",
+      "Bash(which godot *)",
+      "Bash(ls \"C:/Program Files/Godot\")",
+      "Bash(ls \"C:/Godot\")",
+      "Bash(godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a src/tests --ignoreHeadlessMode)",
+      "Bash(godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests --ignoreHeadlessMode)",
+      "Bash(godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests)",
+      "Bash(godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests)",
+      "Bash(godot --headless --path . -s addons/gdUnit4/bin/GdUnitCmdTool.gd --ignoreHeadlessMode -a tests/test_hover_preview_view.gd)",
+      "Read(//c/Users/zuolei01/.ssh/**)",
+      "Bash(ssh-keygen -lf ~/.ssh/id_ed25519.pub)",
+      "Bash(git remote *)",
+      "Bash(ssh -T -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519 git@github.com)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(git add *)"
+    ]
+  }
+}

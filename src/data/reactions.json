@@ -1,0 +1,177 @@
+[
+  {
+    "id": "fire_oil_explosion",
+    "watch_for": ["flame_brand", "oil_slick"],
+    "timing": "OnPlay",
+    "override_effect": "Damage(12, Fire) + AOE_Splash(4)",
+    "flavor": "火 + 油 → 爆炸"
+  },
+  {
+    "id": "bone_soul_harvester",
+    "watch_for": ["bone_harvest", "void_consume"],
+    "timing": "OnKill",
+    "override_effect": "Spawn(SoulBoneCard) + DrawTopOfDeck",
+    "flavor": "骨收 + 虚空 → 骸魂共鸣"
+  },
+  {
+    "id": "lunar_iron_tide",
+    "watch_for": ["lunar_echo", "iron_bulwark"],
+    "timing": "EndTurn",
+    "override_effect": "Draw(2) + Block(8)",
+    "flavor": "月潮 + 铁壁 → 潮汐护盾"
+  },
+  {
+    "id": "purify_venom_cancel",
+    "watch_for": ["purify_light", "venom_touch"],
+    "timing": "OnPlay",
+    "override_effect": "Heal(3)",
+    "flavor": "净化 + 毒触 → 相消治愈"
+  },
+  {
+    "id": "decay_bone_rot",
+    "watch_for": ["rot_spore", "bone_harvest"],
+    "timing": "OnHit",
+    "override_effect": "Apply(Rot, 2) + WeakenArmor(3)",
+    "flavor": "腐孢 + 骨收 → 腐骨侵蚀"
+  },
+  {
+    "id": "blaze_char_inferno",
+    "watch_for": ["blaze_echo", "char_mark"],
+    "timing": "OnDiscard",
+    "override_effect": "Damage(10, Fire) + Apply(Burn, 3)",
+    "flavor": "烈焰共鸣 + 焦痕 → 烈焰地狱"
+  },
+  {
+    "id": "scorch_chain_nova",
+    "watch_for": ["scorch_pulse", "fire_chain"],
+    "timing": "OnKill",
+    "override_effect": "Damage(15, Fire) + AOE_Splash(6)",
+    "flavor": "灼烧脉冲 + 火焰锁链 → 烈焰新星"
+  },
+  {
+    "id": "decay_mold_plague",
+    "watch_for": ["mold_growth", "necrotic_pulse"],
+    "timing": "StartTurn",
+    "override_effect": "Apply(Plague, 4) + Damage(3, Decay)",
+    "flavor": "霉菌蔓延 + 坏死脉冲 → 疫病大流行"
+  },
+  {
+    "id": "entropy_blight_storm",
+    "watch_for": ["entropy_wave", "blight_echo"],
+    "timing": "OnTraitFired",
+    "override_effect": "Apply(Corrosion, 5) + Damage(4, Decay)",
+    "flavor": "熵波 + 枯萎共鸣 → 腐蚀风暴"
+  },
+  {
+    "id": "moon_silver_tide",
+    "watch_for": ["lunar_tide", "silver_draw"],
+    "timing": "OnPlay",
+    "override_effect": "Draw(3) + HealSelf(8%)",
+    "flavor": "月潮 + 银月汲取 → 月银涌现"
+  },
+  {
+    "id": "moon_veil_resonance",
+    "watch_for": ["moon_veil", "crescent_guard"],
+    "timing": "StartTurn",
+    "override_effect": "Block(15) + Buff(MoonShield, 2)",
+    "flavor": "月幕 + 新月守护 → 月华铁壁"
+  },
+  {
+    "id": "lunar_echo_surge",
+    "watch_for": ["lunar_echo", "full_moon_surge"],
+    "timing": "EndTurn",
+    "override_effect": "Draw(2) + Buff(Moon, 3)",
+    "flavor": "月之回响 + 满月涌现 → 月华回旋"
+  },
+  {
+    "id": "iron_bastion_wall",
+    "watch_for": ["iron_bulwark", "bastion"],
+    "timing": "EndTurn",
+    "override_effect": "Block(18) + Buff(Fortress, 2)",
+    "flavor": "铁壁 + 堡垒 → 钢铁要塞"
+  },
+  {
+    "id": "fortify_colossus",
+    "watch_for": ["fortify", "colossus"],
+    "timing": "StartTurn",
+    "override_effect": "Block(10) + Buff(Titan, 3)",
+    "flavor": "筑垒 + 巨像 → 泰坦崛起"
+  },
+  {
+    "id": "bone_shield_ossify",
+    "watch_for": ["bone_shield", "ossify"],
+    "timing": "StartTurn",
+    "override_effect": "Block(8) + Apply(Ossify, 2)",
+    "flavor": "骨盾 + 骨化 → 骨甲共鸣"
+  },
+  {
+    "id": "void_null_convergence",
+    "watch_for": ["void_rift", "null_touch"],
+    "timing": "OnPlay",
+    "override_effect": "Damage(12, Void) + Apply(Nullify, 3)",
+    "flavor": "虚空裂隙 + 虚无触碰 → 虚空汇聚"
+  },
+  {
+    "id": "void_end_mantle",
+    "watch_for": ["void_end", "void_mantle"],
+    "timing": "EndTurn",
+    "override_effect": "HealSelf(10%) + Block(8)",
+    "flavor": "虚空归宿 + 虚空幔帐 → 虚空庇护"
+  },
+  {
+    "id": "rib_bone_draw_surge",
+    "watch_for": ["rib_cage", "bone_draw"],
+    "timing": "EndTurn",
+    "override_effect": "Block(10) + Spawn(BoneCard, 2)",
+    "flavor": "骨笼 + 骨牌汲取 → 骸骨涌现"
+  },
+  {
+    "id": "bone_echo_chain",
+    "watch_for": ["bone_echo", "skeletal_surge"],
+    "timing": "OnKill",
+    "override_effect": "Block(10) + Spawn(BoneCard, 2)",
+    "flavor": "骨甲共鸣 + 骷髅涌现 → 骸骨锁链"
+  },
+  {
+    "id": "void_echo_draw",
+    "watch_for": ["void_echo", "void_draw"],
+    "timing": "OnTraitFired",
+    "override_effect": "Draw(2) + HealSelf(6%)",
+    "flavor": "虚空共鸣 + 虚空汲取 → 虚空涌流"
+  },
+  {
+    "id": "fire_surge_draw",
+    "watch_for": ["fire_surge", "inferno_draw"],
+    "timing": "StartTurn",
+    "override_effect": "Buff(Fire, 4) + Damage(3, Fire)",
+    "flavor": "火焰涌动 + 炼狱抽取 → 火焰冲击"
+  },
+  {
+    "id": "moon_iron_tidal_guard",
+    "watch_for": ["moonbeam", "steel_hide"],
+    "timing": "OnHit",
+    "override_effect": "HealSelf(8%) + Block(6)",
+    "flavor": "月光束 + 钢皮 → 月铁潮护"
+  },
+  {
+    "id": "decay_void_annihilate",
+    "watch_for": ["venomous_aura", "void_harvest"],
+    "timing": "OnKill",
+    "override_effect": "Apply(Venom, 5) + HealSelf(12%)",
+    "flavor": "毒雾弥漫 + 虚空收割 → 腐化虚空"
+  },
+  {
+    "id": "decay_moon_inhibit",
+    "watch_for": ["decompose", "lunar_resonance"],
+    "timing": "OnTraitFired",
+    "override_effect": "Apply(Stasis, 1)",
+    "flavor": "腐败 + 月共鸣 → 衰变抑制"
+  },
+  {
+    "id": "iron_resonance_guard",
+    "watch_for": ["iron_resonance", "iron_draw"],
+    "timing": "OnDraw",
+    "override_effect": "Block(8) + Buff(IronWill, 2)",
+    "flavor": "铁甲共鸣 + 铁盾汲取 → 铁甲意志"
+  }
+]

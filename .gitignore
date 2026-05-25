@@ -1,0 +1,26 @@
+# Godot
+.godot/
+.import/
+*.translation
+export.cfg
+export_credentials.cfg
+export_presets.cfg
+src/.godot/
+src/.import/
+src/.saves/
+src/.screenshots/
+src/reports/
+
+# Build artifacts
+build/
+dist/
+*.exe
+*.pck
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store

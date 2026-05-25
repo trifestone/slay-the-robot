@@ -1,0 +1,100 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3c4shop_scene"]
+
+[ext_resource type="Script" path="res://ui/shop/shop_scene.gd" id="1_shop_scene"]
+
+[node name="ShopScene" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_shop_scene")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.05, 0.04, 0.07, 1)
+
+[node name="Header" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 44.0
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Header"]
+text = "Shop"
+size_flags_horizontal = 3
+modulate = Color(1, 0.95, 0.7, 1)
+
+[node name="Gold" type="Label" parent="Header"]
+text = "Gold: 0"
+
+[node name="Hp" type="Label" parent="Header"]
+text = "HP: 0/0"
+
+[node name="Body" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 56.0
+offset_right = -16.0
+offset_bottom = -120.0
+theme_override_constants/separation = 16
+
+[node name="Cards" type="VBoxContainer" parent="Body"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Body/Cards"]
+text = "Cards"
+modulate = Color(0.85, 0.9, 1, 1)
+
+[node name="List" type="VBoxContainer" parent="Body/Cards"]
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Traits" type="VBoxContainer" parent="Body"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Body/Traits"]
+text = "Traits"
+modulate = Color(1, 0.85, 1, 1)
+
+[node name="List" type="VBoxContainer" parent="Body/Traits"]
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Footer" type="HBoxContainer" parent="."]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -104.0
+offset_right = -16.0
+offset_bottom = -16.0
+theme_override_constants/separation = 16
+
+[node name="HealHost" type="Control" parent="Footer"]
+custom_minimum_size = Vector2(220, 88)
+
+[node name="Spacer" type="Control" parent="Footer"]
+size_flags_horizontal = 3
+
+[node name="LeaveBtn" type="Button" parent="Footer"]
+custom_minimum_size = Vector2(160, 88)
+text = "Leave"
+
+[node name="Toast" type="Label" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -132.0
+offset_right = 160.0
+offset_bottom = -108.0
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(1, 0.95, 0.7, 1)

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "spark_a",
+    "trigger": "OnPlay",
+    "effect_type": "Damage",
+    "effect_value": 1,
+    "axis_timing": "OnPlay",
+    "axis_scope": "Self",
+    "axis_school": "Fire",
+    "rarity": "Common",
+    "cooldown_per_turn": -1,
+    "removable": true,
+    "flavor": "Fixture: OnPlay trait for slot 0."
+  },
+  {
+    "id": "spark_b",
+    "trigger": "OnPlay",
+    "effect_type": "Damage",
+    "effect_value": 2,
+    "axis_timing": "OnPlay",
+    "axis_scope": "Self",
+    "axis_school": "Fire",
+    "rarity": "Common",
+    "cooldown_per_turn": -1,
+    "removable": true,
+    "flavor": "Fixture: OnPlay trait for slot 1."
+  },
+  {
+    "id": "spark_c",
+    "trigger": "OnPlay",
+    "effect_type": "Damage",
+    "effect_value": 3,
+    "axis_timing": "OnPlay",
+    "axis_scope": "Self",
+    "axis_school": "Fire",
+    "rarity": "Common",
+    "cooldown_per_turn": -1,
+    "removable": true,
+    "flavor": "Fixture: OnPlay trait for slot 2."
+  },
+  {
+    "id": "echo_pulse",
+    "trigger": "OnTraitFired",
+    "effect_type": "HealSelfPercent",
+    "effect_value": 1,
+    "axis_timing": "OnTraitFired",
+    "axis_scope": "Self",
+    "axis_school": "Moon",
+    "rarity": "Uncommon",
+    "cooldown_per_turn": 3,
+    "removable": true,
+    "flavor": "Fixture: OnTraitFired trait with high cooldown for depth-chain test."
+  },
+  {
+    "id": "reaction_shield_a",
+    "trigger": "OnPlay",
+    "effect_type": "Damage",
+    "effect_value": 10,
+    "axis_timing": "OnPlay",
+    "axis_scope": "Self",
+    "axis_school": "Iron",
+    "rarity": "Common",
+    "cooldown_per_turn": -1,
+    "removable": true,
+    "flavor": "Fixture: first trait in reaction pair."
+  },
+  {
+    "id": "reaction_shield_b",
+    "trigger": "OnPlay",
+    "effect_type": "Damage",
+    "effect_value": 10,
+    "axis_timing": "OnPlay",
+    "axis_scope": "Self",
+    "axis_school": "Bone",
+    "rarity": "Common",
+    "cooldown_per_turn": -1,
+    "removable": true,
+    "flavor": "Fixture: second trait in reaction pair."
+  }
+]
