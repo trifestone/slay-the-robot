@@ -6,6 +6,8 @@ and those traits can react to one another mid-resolution, producing emergent com
 
 Fork of [Slay-The-Robot](https://github.com/DesirePathGames/Slay-The-Robot) — see [`NOTICE`](./NOTICE) for upstream attribution.
 
+> 中文版 README: [README_zh.md](./README_zh.md)
+
 ---
 
 ## Stack
