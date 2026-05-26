@@ -90,6 +90,10 @@ Early-development prototype with the following complete:
 - ✅ Camp (inventory + drag-drop mount/dismantle)
 - ✅ Shop (two-column cards + traits + heal)
 - ✅ Reforge (base slot change with cost)
+- ✅ **Enemy AI System**: Intent patterns (Attack/Block/Buff/Debuff/Charge/MegaAttack)
+- ✅ **Enemy AI System**: Multi-enemy coordination (tank/aggressive pairs, boss charge)
+- ✅ **UI**: Card dealing animation, turn-end summary with buttons
+- ✅ **UI**: Energy insufficient feedback, shield/block display
 
 Next up: events, meta-progression (unlock/ascension). See [`docs/issues/`](./docs/issues) for the active ticket backlog.
 
