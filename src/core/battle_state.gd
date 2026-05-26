@@ -107,6 +107,16 @@ var phase: int = Phase.PLAYER_TURN
 ## Seeded RNG for deterministic shuffles.
 var rng: RandomNumberGenerator = null
 
+## Player block (temporary shield that absorbs enemy damage).
+## Reset to 0 at the start of each new turn.
+var player_block: int = 0
+
+## Player vulnerability (increases damage taken from enemies).
+var player_vulnerable: int = 0
+
+## Player weakness (decreases damage dealt to enemies).
+var player_weak: int = 0
+
 ## Human-readable battle log. One line appended per meaningful action.
 ## Used for golden-hash regression testing.
 var battle_log: Array[String] = []
@@ -116,18 +126,24 @@ var battle_log: Array[String] = []
 # ---------------------------------------------------------------------------
 
 ## Call once at the start of a new battle.
-## Clears all per-battle state including depth, log, cooldowns, and reactions.
+## Clears all per-battle state including depth, log, cooldowns, reactions, and block.
 func reset_per_battle() -> void:
 	fire_depth    = 0
 	trait_fire_log = []
 	cooldown_table = {}
 	reactions      = []
+	player_block   = 0
+	player_vulnerable = 0
+	player_weak    = 0
 
 
 ## Call at the start of each new turn (both player and enemy turns).
 ## Resets cooldown counts so per-turn limits apply freshly each turn.
+## player_block is NOT cleared here — unused block carries over between turns
+## (StS-style), so the player can build up defence over multiple turns.
 func reset_per_turn() -> void:
 	cooldown_table = {}
+	# player_block intentionally retained across turns
 
 
 ## Populate state.reactions from the ReactionRegistry.

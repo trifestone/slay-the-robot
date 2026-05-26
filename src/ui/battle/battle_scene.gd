@@ -60,6 +60,8 @@ var _finalize_delay_seconds: float = 2.6
 const DAMAGE_TIPS_ZH := "请点击目标敌人"
 const DAMAGE_TIPS_CANCEL_ZH := " (右键 / Esc 取消)"
 
+const HAND_HEIGHT: float = 360.0  # Match HandUI.HAND_HEIGHT
+
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -112,12 +114,16 @@ func setup(run_state: Resource, tier: String = "normal", locale: String = "zh_CN
 		if anchor != null:
 			_vfx_layer.set_player_lunge_dir_from(_player_ui, anchor)
 
-	# Initial render.
-	_refresh_all()
+	# Initial render (without hand — cards will be dealt with animation).
+	_refresh_without_hand()
 
-	# Hook UI signals.
+	# Deal cards with animation (optimization 2).
+	# Deck position: off-screen left, centered vertically near hand area.
+	var deck_pos: Vector2 = Vector2(-300, size.y - HAND_HEIGHT * 0.5)
+	_hand_ui.animate_deal(_state.hand, _locale, deck_pos, _on_deal_complete)
+
+	# Hook end turn button (hand signals hooked after deal animation).
 	_end_btn.pressed.connect(_on_end_turn_pressed)
-	_hook_hand_card_signals()
 
 
 # ---------------------------------------------------------------------------
@@ -130,7 +136,8 @@ func _refresh_all() -> void:
 	_refresh_enemy_widgets()
 	_energy_lbl.text = "能量:%d / %d" % [_state.energy, _state.max_energy]
 	_hp_lbl.text = "生命:%d / %d" % [_state.player_hp, _state.max_hp]
-	_player_ui.bind(_state.player_hp, _state.max_hp)
+	var block: int = int(_state.player_block) if "player_block" in _state else 0
+	_player_ui.bind(_state.player_hp, _state.max_hp, block)
 	_end_btn.text = "结束回合"
 	_end_btn.disabled = _finished
 	# Refresh the VFXLayer's widget list so newly-spawned enemy widgets get
@@ -138,6 +145,26 @@ func _refresh_all() -> void:
 	if _vfx_layer != null and _vfx_layer.has_method("update_enemy_widgets"):
 		_vfx_layer.update_enemy_widgets(_enemy_widgets)
 	_update_armed_hint()
+
+
+## Refresh everything except the hand (used during initial deal animation).
+func _refresh_without_hand() -> void:
+	_refresh_enemy_widgets()
+	_energy_lbl.text = "能量:%d / %d" % [_state.energy, _state.max_energy]
+	_hp_lbl.text = "生命:%d / %d" % [_state.player_hp, _state.max_hp]
+	var block: int = int(_state.player_block) if "player_block" in _state else 0
+	_player_ui.bind(_state.player_hp, _state.max_hp, block)
+	_end_btn.text = "结束回合"
+	_end_btn.disabled = true  # Disabled during deal animation
+	if _vfx_layer != null and _vfx_layer.has_method("update_enemy_widgets"):
+		_vfx_layer.update_enemy_widgets(_enemy_widgets)
+
+
+## Called after card dealing animation completes.
+func _on_deal_complete() -> void:
+	_hook_hand_card_signals()
+	if not _finished:
+		_end_btn.disabled = false
 
 
 func _hook_hand_card_signals() -> void:
@@ -154,6 +181,28 @@ func _hook_hand_card_signals() -> void:
 			child.card_unhovered.connect(_on_card_unhovered)
 
 
+## Show a floating "能量不足" hint centered on screen when energy is insufficient.
+func _show_energy_hint(text: String) -> void:
+	var hint: Label = Label.new()
+	hint.text = text
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override("font_color", Color(1, 0.85, 0.3, 1))
+	hint.add_theme_font_size_override("font_size", 28)
+	add_child(hint)
+	# Center on screen (battle scene size).
+	var label_size: Vector2 = Vector2(200, 40)
+	hint.size = label_size
+	hint.position = Vector2(size.x * 0.5 - label_size.x * 0.5, size.y * 0.35)
+	hint.modulate.a = 0.0
+	# Animate: fade in -> hold -> fade out + float up.
+	var tw: Tween = create_tween()
+	tw.tween_property(hint, "modulate:a", 1.0, 0.15)
+	tw.tween_interval(0.6)  # Hold for readability
+	tw.chain().tween_property(hint, "position", hint.position + Vector2(0, -30), 0.4)
+	tw.parallel().tween_property(hint, "modulate:a", 0.0, 0.4)
+	tw.chain().tween_callback(hint.queue_free)
+
+
 # ---------------------------------------------------------------------------
 # Input handlers
 # ---------------------------------------------------------------------------
@@ -162,6 +211,7 @@ func _on_card_clicked(card: Resource) -> void:
 	if _finished or card == null:
 		return
 	if _state.energy < 1:
+		_flash_energy_insufficient()
 		return
 	if not _state.hand.has(card):
 		return
@@ -172,13 +222,35 @@ func _on_card_clicked(card: Resource) -> void:
 	_resolve_play_card(card, null)
 
 
+## Flash the energy label red and show "能量不足" hint when player tries to play with insufficient energy.
+func _flash_energy_insufficient() -> void:
+	var original_color: Color = _energy_lbl.modulate
+	var flash_color: Color = Color(1, 0.2, 0.2, 1)  # Bright red
+
+	# Create flash tween: white -> red -> white (3 pulses for "叮叮叮" feel)
+	var tw: Tween = create_tween()
+	tw.tween_property(_energy_lbl, "modulate", flash_color, 0.08)
+	tw.tween_property(_energy_lbl, "modulate", original_color, 0.08)
+	tw.tween_property(_energy_lbl, "modulate", flash_color, 0.08)
+	tw.tween_property(_energy_lbl, "modulate", original_color, 0.08)
+	tw.tween_property(_energy_lbl, "modulate", flash_color, 0.08)
+	tw.tween_property(_energy_lbl, "modulate", original_color, 0.12)
+
+	# Show floating hint "能量不足"
+	_show_energy_hint("能量不足")
+
+
 func _resolve_play_card(card: Resource, target) -> void:
 	var log_before: int = _state.trait_fire_log.size()
 	var dmg_before: int = _damage_events_size()
 	var enemies_alive_before: int = _alive_enemy_count()
+	var hp_before: int = int(_state.player_hp)
+	var block_before: int = int(_state.player_block) if "player_block" in _state else 0
 	_loop.play_card(_state, card, target)
 	_emit_signals_for_new_log_entries(log_before, card)
 	_emit_strike_signals(dmg_before, target)
+	# Detect heal and block changes for VFX.
+	_detect_hp_and_block_changes(hp_before, block_before)
 	# Accumulate damage dealt this turn (sum dmg from new damage_events).
 	_turn_dmg_dealt += _damage_events_sum_since(dmg_before)
 	# Count newly-killed enemies (alive count drop).
@@ -191,10 +263,20 @@ func _resolve_play_card(card: Resource, target) -> void:
 	var result: Dictionary = _loop.is_over(_state)
 	if not result.get("ongoing", true):
 		if not _finished:
-			_show_end_turn_summary(int(_state.player_hp))
 			_finished = true
 			_end_btn.disabled = true
-			_finalize_battle_after_summary(result)
+			# Prepare drops and trigger win VFX before showing summary.
+			if result.get("won", false):
+				var drops: Array = _roll_drops()
+				var killed: Resource = _last_killed_enemy()
+				if killed == null:
+					killed = _state.enemy
+				_signaler.notify_enemy_killed(killed, drops)
+				_run_state.player_hp = int(_state.player_hp)
+				set_meta("_battle_result", {"won": true, "drops": drops})
+			else:
+				set_meta("_battle_result", {"won": false, "drops": []})
+			_show_end_turn_summary(int(_state.player_hp), true)
 			_reset_turn_stats()
 		return
 	if not _finished:
@@ -207,8 +289,15 @@ func _on_end_turn_pressed() -> void:
 	_clear_armed_card()
 	var log_before: int = _state.trait_fire_log.size()
 	var hp_before: int = int(_state.player_hp)
+	var block_before: int = int(_state.player_block) if "player_block" in _state else 0
 	var dmg_before: int = _damage_events_size()
 	_loop.end_turn(_state)
+	# Emit enemy lunge signals for alive enemies that have intent damage.
+	if _state.enemies != null:
+		for i in range(_state.enemies.size()):
+			var entry: Dictionary = _state.enemies[i]
+			if int(entry.get("hp", 0)) > 0 and int(entry.get("intent_damage", 0)) > 0:
+				_signaler.notify_enemy_lunged(i)
 	# Cards in hand at start of new turn — pass null so signaler keys are stable.
 	_emit_signals_for_new_log_entries(log_before, null)
 	_emit_strike_signals(dmg_before, null)
@@ -216,20 +305,33 @@ func _on_end_turn_pressed() -> void:
 	if hp_after < hp_before:
 		_signaler.notify_enemy_attacked(hp_before - hp_after)
 		_turn_dmg_taken += hp_before - hp_after
-	# Always show the turn summary before checking outcome — even on a loss
-	# we want the player to see "受到伤害:N" before run_root flips.
-	_show_end_turn_summary(hp_after)
+	# Block was consumed during enemy attack — emit delta now that we know it.
+	var block_after: int = int(_state.player_block) if "player_block" in _state else 0
+	if block_after != block_before:
+		_signaler.notify_block_changed(block_after - block_before, false, block_after)
+	# Check if battle ended — determines which buttons to show.
 	var result: Dictionary = _loop.is_over(_state)
-	if not result.get("ongoing", true):
-		if not _finished:
-			_finished = true
-			_end_btn.disabled = true
-			_finalize_battle_after_summary(result)
-			_reset_turn_stats()
+	var is_battle_end: bool = not result.get("ongoing", true)
+	if is_battle_end:
+		_finished = true
+		_end_btn.disabled = true
+	# Refresh PlayerUI to show updated HP/block after enemy attack BEFORE showing summary.
+	_refresh_player_ui_only()
+	# Always show the turn summary (now modal with buttons).
+	_show_end_turn_summary(hp_after, is_battle_end)
+	if is_battle_end:
+		# Store result for the return-to-menu handler.
+		set_meta("_battle_result", result)
+
+
+## Refresh only the player UI (HP bar, block display) without touching hand/enemies.
+## Used during end-turn flow to show enemy attack results before the summary panel.
+func _refresh_player_ui_only() -> void:
+	if _state == null:
 		return
-	_reset_turn_stats()
-	if not _finished:
-		_refresh_all()
+	var block: int = int(_state.player_block) if "player_block" in _state else 0
+	_player_ui.bind(_state.player_hp, _state.max_hp, block)
+	_hp_lbl.text = "生命:%d / %d" % [_state.player_hp, _state.max_hp]
 
 
 func _on_card_hovered(card: Resource, source: Control = null) -> void:
@@ -307,15 +409,30 @@ func _update_armed_hint() -> void:
 	if _armed_hint == null:
 		_armed_hint = Label.new()
 		_armed_hint.name = "ArmedHint"
-		_armed_hint.add_theme_color_override("font_color", Color(1, 0.85, 0.4))
-		_armed_hint.position = Vector2(40, 40)
-		_armed_hint.size = Vector2(420, 28)
+		_armed_hint.add_theme_color_override("font_color", Color(1, 0.85, 0.4, 1))
+		_armed_hint.add_theme_font_size_override("font_size", 28)
+		_armed_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		add_child(_armed_hint)
 	if _armed_card == null:
 		_armed_hint.visible = false
 		return
 	_armed_hint.text = DAMAGE_TIPS_ZH + DAMAGE_TIPS_CANCEL_ZH
+	# Center on screen like energy hint.
+	var label_size: Vector2 = Vector2(400, 40)
+	_armed_hint.size = label_size
+	_armed_hint.position = Vector2(size.x * 0.5 - label_size.x * 0.5, size.y * 0.35)
 	_armed_hint.visible = true
+	# Auto-fade after 2 seconds if user doesn't interact.
+	if _armed_hint.has_meta("fade_tween"):
+		var old_tw: Tween = _armed_hint.get_meta("fade_tween")
+		if old_tw != null:
+			old_tw.kill()
+	var tw: Tween = create_tween()
+	_armed_hint.set_meta("fade_tween", tw)
+	_armed_hint.modulate.a = 1.0
+	tw.tween_interval(2.0)
+	tw.chain().tween_property(_armed_hint, "modulate:a", 0.0, 0.4)
+	tw.parallel().tween_property(_armed_hint, "position", _armed_hint.position + Vector2(0, -30), 0.4)
 
 
 func _on_enemy_widget_clicked(idx: int) -> void:
@@ -378,25 +495,21 @@ func _check_and_finish() -> void:
 	_finalize_battle_after_summary(result)
 
 
-## Wait for the summary panel to be readable, then emit battle_finished so
-## run_root can flip to the next stage. Tests can zero out _finalize_delay_seconds
-## to make this synchronous-ish (single process_frame await).
+## Prepares drops and waits for summary dismissal before emitting battle_finished.
+## When the player clicks "返回" on the summary, _on_summary_return_to_menu
+## will call this and emit the signal.
 func _finalize_battle_after_summary(result: Dictionary) -> void:
 	var won: bool = bool(result.get("won", false))
 	var drops: Array = []
 	if won:
 		drops = _roll_drops()
-		# Pick the most-recently-killed enemy as the source of devour drops; if
-		# we can't find one (defensive — shouldn't happen on win), fall back to
-		# the legacy single-enemy field.
 		var killed: Resource = _last_killed_enemy()
 		if killed == null:
 			killed = _state.enemy
 		_signaler.notify_enemy_killed(killed, drops)
 	# Sync HP back into run_state.
 	_run_state.player_hp = int(_state.player_hp)
-	if _finalize_delay_seconds > 0.0:
-		await get_tree().create_timer(_finalize_delay_seconds).timeout
+	# Emit immediately (button handlers control the flow now).
 	battle_finished.emit({
 		"won":     won,
 		"hp_left": int(_state.player_hp),
@@ -438,6 +551,16 @@ func _roll_drops() -> Array:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+## After play_card resolves, compare HP and block to emit heal / block VFX signals.
+func _detect_hp_and_block_changes(hp_before: int, block_before: int) -> void:
+	var hp_after: int = int(_state.player_hp)
+	var block_after: int = int(_state.player_block) if "player_block" in _state else 0
+	if hp_after > hp_before:
+		_signaler.notify_player_healed(hp_after - hp_before)
+	if block_after != block_before:
+		_signaler.notify_block_changed(block_after - block_before, true, block_after)
+
 
 func _battle_seed() -> int:
 	var s: int = int(_run_state.seed)
@@ -499,10 +622,40 @@ func _refresh_enemy_widgets() -> void:
 		var enemy: Resource = entry.get("enemy", null)
 		var hp: int = int(entry.get("hp", 0))
 		var max_hp: int = int(entry.get("max_hp", hp))
-		var intent: int = int(entry.get("intent_damage", 0))
-		ui.bind(enemy, hp, max_hp, intent, _locale)
+		var intent_str: String = String(entry.get("intent", "Attack"))
+		var intent_value: int = _get_intent_value_for_display(entry, enemy)
+		ui.bind(enemy, hp, max_hp, intent_str, intent_value, _locale)
 		# Dim dead enemies so the player can see the focus shift.
 		ui.modulate = Color(0.4, 0.4, 0.4, 0.6) if hp <= 0 else Color(1, 1, 1, 1)
+
+
+## Get appropriate display value for an enemy's current intent.
+func _get_intent_value_for_display(entry: Dictionary, enemy: Resource) -> int:
+	var intent: String = String(entry.get("intent", "Attack"))
+	match intent:
+		"Block":
+			var block_val: int = entry.get("intent_block", 0)
+			if block_val > 0:
+				return block_val
+			if enemy != null and "intent_block" in enemy:
+				return enemy.intent_block
+			return 5
+		"Buff":
+			if enemy != null and "buff_power" in enemy:
+				return enemy.buff_power
+			return 2
+		"Debuff":
+			if enemy != null and "debuff_power" in enemy:
+				return enemy.debuff_power
+			return 1
+		"Charge":
+			if enemy != null and "_charge_counter" in enemy:
+				return enemy._charge_counter
+			return 1
+		"MegaAttack":
+			return int(entry.get("intent_damage", 0)) * 2
+		_:
+			return int(entry.get("intent_damage", 0))
 
 
 func _primary_enemy_widget() -> Control:
@@ -582,11 +735,11 @@ func _reset_turn_stats() -> void:
 	_turn_kills = 0
 
 
-func _show_end_turn_summary(current_hp: int) -> void:
+func _show_end_turn_summary(current_hp: int, is_battle_end: bool = false) -> void:
 	if _summary_panel == null:
 		_summary_panel = _build_summary_panel()
 		add_child(_summary_panel)
-	var content: Label = _summary_panel.get_node("Content")
+	var content: Label = _summary_panel.get_node("VBox/Content")
 	var max_hp: int = int(_state.max_hp) if _state != null else 0
 	content.text = "回合结算\n\n击杀数:%d\n造成伤害:%d\n受到伤害:%d\n当前生命:%d / %d" % [
 		_turn_kills,
@@ -595,10 +748,17 @@ func _show_end_turn_summary(current_hp: int) -> void:
 		current_hp,
 		max_hp,
 	]
+	# Configure buttons based on battle state.
+	var next_btn: Button = _summary_panel.get_node("VBox/ButtonRow/NextRoundBtn")
+	var menu_btn: Button = _summary_panel.get_node("VBox/ButtonRow/MenuBtn")
+	if is_battle_end:
+		next_btn.visible = false
+		menu_btn.text = "返回"  # Single button for battle end
+	else:
+		next_btn.visible = true
+		menu_btn.text = "返回主界面"
 	_summary_panel.visible = true
-	# Auto-hide after a short beat so the player can read it without blocking.
-	var t: SceneTreeTimer = get_tree().create_timer(2.4)
-	t.timeout.connect(_hide_summary_panel)
+	# Don't auto-hide anymore — player must click a button.
 
 
 func _hide_summary_panel() -> void:
@@ -606,30 +766,100 @@ func _hide_summary_panel() -> void:
 		_summary_panel.visible = false
 
 
+func _on_summary_next_round() -> void:
+	_hide_summary_panel()
+	# Continue to next round — animate dealing the new hand.
+	_reset_turn_stats()
+	_refresh_without_hand()
+	_end_btn.disabled = true  # Disable during animation
+	var deck_pos: Vector2 = Vector2(-300, size.y - HAND_HEIGHT * 0.5)
+	_hand_ui.animate_deal(_state.hand, _locale, deck_pos, _on_deal_complete)
+
+
+func _on_summary_return_to_menu() -> void:
+	_hide_summary_panel()
+	if _finished:
+		# Battle ended — emit using stored result.
+		var result: Dictionary = get_meta("_battle_result", {"won": false, "drops": [], "hp_left": int(_state.player_hp) if _state != null else 0})
+		battle_finished.emit({
+			"won":     result.get("won", false),
+			"hp_left": int(_state.player_hp) if _state != null else 0,
+			"drops":   result.get("drops", []),
+		})
+	else:
+		# Abandon run — return to main menu.
+		battle_finished.emit({
+			"won":     false,
+			"hp_left": int(_state.player_hp) if _state != null else 0,
+			"drops":   [],
+			"abandoned": true,
+		})
+
+
 func _build_summary_panel() -> Control:
 	var panel := PanelContainer.new()
 	panel.name = "EndTurnSummary"
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.anchor_left = 0.5
-	panel.anchor_top = 0.18
+	panel.anchor_top = 0.5
 	panel.anchor_right = 0.5
-	panel.anchor_bottom = 0.18
-	panel.offset_left = -180
-	panel.offset_right = 180
-	panel.offset_top = 0
-	panel.offset_bottom = 200
+	panel.anchor_bottom = 0.5
+	panel.offset_left = -200
+	panel.offset_right = 200
+	panel.offset_top = -160
+	panel.offset_bottom = 160
+
 	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(0.07, 0.07, 0.12, 0.92)
-	bg.border_color = Color(0.95, 0.85, 0.4, 0.85)
-	bg.set_border_width_all(2)
-	bg.set_corner_radius_all(8)
-	bg.set_content_margin_all(16)
+	bg.bg_color = Color(0.07, 0.07, 0.12, 0.95)
+	bg.border_color = Color(0.95, 0.85, 0.4, 0.9)
+	bg.set_border_width_all(3)
+	bg.set_corner_radius_all(12)
+	bg.set_content_margin_all(20)
 	panel.add_theme_stylebox_override("panel", bg)
+
+	# VBox for content + buttons
+	var vbox := VBoxContainer.new()
+	vbox.name = "VBox"
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	panel.add_child(vbox)
+
 	var label := Label.new()
 	label.name = "Content"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_color_override("font_color", Color(1, 0.95, 0.7))
 	label.add_theme_font_size_override("font_size", 18)
-	panel.add_child(label)
+	vbox.add_child(label)
+
+	# Spacer
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(0, 20)
+	vbox.add_child(spacer)
+
+	# Button row
+	var hbox := HBoxContainer.new()
+	hbox.name = "ButtonRow"
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(hbox)
+
+	var next_btn := Button.new()
+	next_btn.name = "NextRoundBtn"
+	next_btn.text = "进入下一轮"
+	next_btn.custom_minimum_size = Vector2(140, 44)
+	next_btn.add_theme_font_size_override("font_size", 16)
+	next_btn.pressed.connect(_on_summary_next_round)
+	hbox.add_child(next_btn)
+
+	var btn_spacer := Control.new()
+	btn_spacer.custom_minimum_size = Vector2(20, 0)
+	hbox.add_child(btn_spacer)
+
+	var menu_btn := Button.new()
+	menu_btn.name = "MenuBtn"
+	menu_btn.text = "返回主界面"
+	menu_btn.custom_minimum_size = Vector2(140, 44)
+	menu_btn.add_theme_font_size_override("font_size", 16)
+	menu_btn.pressed.connect(_on_summary_return_to_menu)
+	hbox.add_child(menu_btn)
+
 	panel.visible = false
 	return panel

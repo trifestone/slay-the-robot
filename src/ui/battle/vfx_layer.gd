@@ -66,6 +66,14 @@ func bind(signaler: Node, enemy_widgets, player_ui: Control = null) -> void:
 		_signaler.attacker_lunged.connect(_on_attacker_lunged)
 	if _signaler.has_signal("damage_dealt"):
 		_signaler.damage_dealt.connect(_on_damage_dealt)
+	if _signaler.has_signal("player_healed"):
+		_signaler.player_healed.connect(_on_player_healed)
+	if _signaler.has_signal("block_changed"):
+		_signaler.block_changed.connect(_on_block_changed)
+	if _signaler.has_signal("shield_broke"):
+		_signaler.shield_broke.connect(_on_shield_broke)
+	if _signaler.has_signal("enemy_lunged"):
+		_signaler.enemy_lunged.connect(_on_enemy_lunged)
 
 
 ## Replace the bound enemy widget list (e.g. after a target shift) without
@@ -96,19 +104,26 @@ func set_player_lunge_dir_from(player: Control, enemy_anchor: Control) -> void:
 # Signal handlers
 # ---------------------------------------------------------------------------
 
-func _on_reaction_triggered(reaction_id: String, _card: Resource) -> void:
-	var burst: Node2D = ReactionBurstScene.instantiate()
-	add_child(burst)
-	var rect: Rect2 = _enemy_rect(_primary_widget(), ENEMY_BURST_OFFSET)
-	burst.play(rect, reaction_id, 1.0)
+func _on_reaction_triggered(_reaction_id: String, _card: Resource) -> void:
+	# Reaction burst effects disabled — user found them visually noisy.
+	pass
 
 
-func _on_trait_fired(trait_id: String, _card: Resource, _depth: int) -> void:
-	var burst: Node2D = ReactionBurstScene.instantiate()
-	add_child(burst)
-	var rect: Rect2 = _enemy_rect(_primary_widget(), TRAIT_BURST_OFFSET)
-	rect.size = Vector2(140, 60)
-	burst.play(rect, trait_id, 0.6)
+func _on_trait_fired(_trait_id: String, _card: Resource, _depth: int) -> void:
+	# Trait-fired color bursts disabled — user found them visually noisy.
+	pass
+
+
+## Returns true if the trait is a player-side effect (block, guard, heal, etc.).
+func _is_player_trait(trait_id: String) -> bool:
+	var lower: String = trait_id.to_lower()
+	if "guard" in lower or "shield" in lower or "barrier" in lower:
+		return true
+	if "block" in lower:
+		return true
+	if "heal" in lower or "restore" in lower:
+		return true
+	return false
 
 
 func _on_enemy_killed(enemy: Resource, drops: Array) -> void:
@@ -146,6 +161,15 @@ func _on_attacker_lunged(_target_idx: int) -> void:
 	_lunge(_player_ui, _player_lunge_dir)
 
 
+## Lunge the ENEMY widget toward the player when the enemy attacks.
+func _on_enemy_lunged(enemy_idx: int) -> void:
+	var target: Control = _widget_at(enemy_idx)
+	if target == null:
+		return
+	# Lunge direction: toward player (left, -1)
+	_lunge(target, -1.0)
+
+
 func _on_damage_dealt(target_idx: int, dmg: int, blocked: int) -> void:
 	var target: Control = _widget_at(target_idx)
 	if target == null:
@@ -156,6 +180,77 @@ func _on_damage_dealt(target_idx: int, dmg: int, blocked: int) -> void:
 		_spawn_damage_float(target, dmg)
 		_shake(target, SHAKE_AMPLITUDE, SHAKE_DURATION)
 		_flash(target, DAMAGE_COLOR, 0.18)
+
+
+## Green +N float above the player avatar when healed.
+func _on_player_healed(amount: int) -> void:
+	if _player_ui == null:
+		return
+	var pop: Node2D = HealPopScene.instantiate()
+	add_child(pop)
+	var anchor: Vector2 = _center_of(_player_ui) + Vector2(0, -_player_ui.size.y * 0.5 - 16)
+	pop.play(anchor, amount, Color(0.35, 0.95, 0.45, 1), 1.0)
+
+
+## Block gain: green "+N 格挡" float + player UI flash.
+## Block loss: shake player UI (shield absorbed hit).
+func _on_block_changed(delta: int, _is_gain: bool, remaining: int) -> void:
+	if _player_ui == null:
+		return
+	if delta > 0:
+		# Gained block — green float
+		var pop: Node2D = HealPopScene.instantiate()
+		add_child(pop)
+		var anchor: Vector2 = _center_of(_player_ui) + Vector2(0, -_player_ui.size.y * 0.5 + 4)
+		pop.play_with_label(anchor, "+格挡 %d" % delta, Color(0.35, 0.75, 0.55, 1), 0.9)
+		_flash(_player_ui, Color(0.35, 0.85, 0.55, 0.6), 0.2)
+	elif delta < 0:
+		# Block consumed — shield shake (softer than damage shake)
+		_shake(_player_ui, SHAKE_AMPLITUDE * 0.5, SHAKE_DURATION)
+		if remaining == 0:
+			# Shield broke — extra red flash on player
+			_flash(_player_ui, DAMAGE_COLOR, 0.3)
+
+
+## Shield broke — spawn crack shards emanating from the shield icon area.
+func _on_shield_broke() -> void:
+	if _player_ui == null:
+		return
+	# Find the shield icon within PlayerUI
+	var shield: Control = _player_ui.get_node_or_null("ShieldIcon")
+	if shield == null:
+		shield = _player_ui
+	var origin: Vector2 = _center_of(shield)
+	_spawn_shield_shatter(origin)
+
+
+func _spawn_shield_shatter(origin: Vector2) -> void:
+	# Spawn 6 shard particles flying outward
+	var shard_count: int = 6
+	var colors: Array = [
+		Color(0.35, 0.65, 0.75, 1),
+		Color(0.55, 0.85, 0.95, 1),
+		Color(0.25, 0.45, 0.55, 1),
+	]
+	for i in range(shard_count):
+		var shard := ColorRect.new()
+		shard.custom_minimum_size = Vector2(6, 6)
+		shard.color = colors[i % colors.size()]
+		add_child(shard)
+		shard.position = origin
+		var angle: float = (TAU / shard_count) * i
+		var distance: float = 32.0 + randf() * 24.0
+		var end_pos: Vector2 = origin + Vector2(cos(angle), sin(angle)) * distance
+		var tw: Tween = create_tween()
+		tw.tween_property(shard, "position", end_pos, 0.25)
+		tw.parallel().tween_property(shard, "rotation", angle + PI * 0.5, 0.25)
+		tw.chain().tween_property(shard, "modulate:a", 0.0, 0.2)
+		tw.chain().tween_callback(shard.queue_free)
+	# Ring burst for dramatic effect
+	var burst: Node2D = ReactionBurstScene.instantiate()
+	add_child(burst)
+	var rect := Rect2(origin - Vector2(30, 30), Vector2(60, 60))
+	burst.play(rect, "shield_break", 0.4)
 
 
 # ---------------------------------------------------------------------------
@@ -293,6 +388,14 @@ func _disconnect_all() -> void:
 		_signaler.attacker_lunged.disconnect(_on_attacker_lunged)
 	if _signaler.has_signal("damage_dealt") and _signaler.damage_dealt.is_connected(_on_damage_dealt):
 		_signaler.damage_dealt.disconnect(_on_damage_dealt)
+	if _signaler.has_signal("player_healed") and _signaler.player_healed.is_connected(_on_player_healed):
+		_signaler.player_healed.disconnect(_on_player_healed)
+	if _signaler.has_signal("block_changed") and _signaler.block_changed.is_connected(_on_block_changed):
+		_signaler.block_changed.disconnect(_on_block_changed)
+	if _signaler.has_signal("shield_broke") and _signaler.shield_broke.is_connected(_on_shield_broke):
+		_signaler.shield_broke.disconnect(_on_shield_broke)
+	if _signaler.has_signal("enemy_lunged") and _signaler.enemy_lunged.is_connected(_on_enemy_lunged):
+		_signaler.enemy_lunged.disconnect(_on_enemy_lunged)
 
 
 func _exit_tree() -> void:

@@ -10,39 +10,47 @@
 ##     returns { icon_code, label, tooltip }
 extends RefCounted
 
-const SUPPORTED_INTENTS := ["Attack", "Block", "Buff", "Debuff", "Multi"]
+const SUPPORTED_INTENTS := ["Attack", "Block", "Buff", "Debuff", "Multi", "Charge", "MegaAttack"]
 
 # code-tag drives the .tscn icon swap (placeholder until real sprites land)
 const ICON_CODES := {
-	"Attack":  "ATK",
-	"Block":   "BLK",
-	"Buff":    "BUF",
-	"Debuff":  "DBF",
-	"Multi":   "MUL",
+	"Attack":    "ATK",
+	"Block":     "DEF",
+	"Buff":      "BUF",
+	"Debuff":    "DEB",
+	"Multi":     "MUL",
+	"Charge":    "CHG",
+	"MegaAttack": "MEGA",
 }
 
 const COLORS := {
-	"Attack":  Color(0.85, 0.30, 0.20),
-	"Block":   Color(0.55, 0.65, 0.85),
-	"Buff":    Color(0.45, 0.75, 0.40),
-	"Debuff":  Color(0.65, 0.30, 0.65),
-	"Multi":   Color(0.85, 0.65, 0.20),
+	"Attack":     Color(0.85, 0.30, 0.20),
+	"Block":      Color(0.35, 0.60, 0.85),
+	"Buff":       Color(0.45, 0.75, 0.40),
+	"Debuff":     Color(0.65, 0.30, 0.65),
+	"Multi":      Color(0.85, 0.65, 0.20),
+	"Charge":     Color(0.95, 0.75, 0.25),
+	"MegaAttack": Color(1.0, 0.15, 0.15),
 }
 
 const TOOLTIP_ZH := {
-	"Attack":  "下回合攻击造成 %d 点伤害",
-	"Block":   "下回合获得 %d 点格挡",
-	"Buff":    "下回合给自己施加 %d 层增益",
-	"Debuff":  "下回合给玩家施加 %d 层减益",
-	"Multi":   "下回合执行多重动作 (强度 %d)",
+	"Attack":     "下回合攻击造成 %d 点伤害",
+	"Block":      "下回合获得 %d 点格挡",
+	"Buff":       "下回合给自己施加 %d 层增益",
+	"Debuff":     "下回合给玩家施加 %d 层减益",
+	"Multi":      "下回合执行多重动作 (强度 %d)",
+	"Charge":     "正在蓄力…… (第 %d 回合)",
+	"MegaAttack": "★ 下回合释放毁灭性打击 %d 点伤害 ★",
 }
 
 const TOOLTIP_EN := {
-	"Attack":  "Will attack for %d damage next turn",
-	"Block":   "Will gain %d block next turn",
-	"Buff":    "Will buff self by %d next turn",
-	"Debuff":  "Will debuff player by %d next turn",
-	"Multi":   "Will perform multiple actions next turn (intensity %d)",
+	"Attack":     "Will attack for %d damage next turn",
+	"Block":      "Will gain %d block next turn",
+	"Buff":       "Will buff self by %d next turn",
+	"Debuff":     "Will debuff player by %d next turn",
+	"Multi":      "Will perform multiple actions next turn (intensity %d)",
+	"Charge":     "Charging up... (turn %d)",
+	"MegaAttack": "★ Will unleash devastating attack for %d damage ★",
 }
 
 

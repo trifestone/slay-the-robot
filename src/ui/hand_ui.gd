@@ -106,3 +106,68 @@ func _on_card_unhovered(_card: Resource, ui: Control) -> void:
 	tw.tween_property(ui, "position", base_pos, TWEEN_DUR)
 	tw.tween_property(ui, "rotation_degrees", base_rot, TWEEN_DUR)
 	tw.tween_property(ui, "scale", Vector2.ONE, TWEEN_DUR)
+
+
+# ---------------------------------------------------------------------------
+# Card dealing animation (Optimization 2)
+# ---------------------------------------------------------------------------
+
+## Animate dealing cards one by one with a delay between each.
+## Cards start off-screen/deck position and fly into hand position.
+## on_complete: called after all cards are dealt.
+func animate_deal(cards: Array, locale: String, deck_pos: Vector2, on_complete: Callable = Callable()) -> void:
+	# Clear existing cards first
+	for child in _row.get_children():
+		child.queue_free()
+	
+	if cards.is_empty():
+		if on_complete.is_valid():
+			on_complete.call()
+		return
+	
+	_locale = locale
+	var deal_delay: float = 0.25  # seconds between each card
+	
+	for i in range(cards.size()):
+		var card: Resource = cards[i]
+		var ui: Control = CardUIScene.instantiate()
+		_row.add_child(ui)
+		ui.bind(card, 1, _locale)
+		
+		# Calculate final position
+		var hand_w: float = _row.size.x if _row.size.x > 0 else size.x
+		var center_x: float = hand_w * 0.5
+		var base_card_y: float = HAND_HEIGHT - CARD_H - float(HAND_BOTTOM_MARGIN)
+		var offset_from_mid: float = float(i) - float(cards.size() - 1) * 0.5
+		var card_x: float = center_x + offset_from_mid * CARD_X_STEP - CARD_W * 0.5
+		var card_y: float = base_card_y + abs(offset_from_mid) * FAN_Y_DROP
+		var rot_deg: float = offset_from_mid * FAN_ANGLE_DEG
+		var final_pos: Vector2 = Vector2(card_x, card_y)
+		
+		# Start from deck position
+		ui.position = deck_pos
+		ui.rotation_degrees = 0.0
+		ui.scale = Vector2(0.5, 0.5)  # Start smaller
+		ui.modulate.a = 0.0
+		
+		# Set metadata for hover
+		ui.set_meta("base_pos", final_pos)
+		ui.set_meta("base_rot", rot_deg)
+		ui.size = Vector2(CARD_W, CARD_H)
+		ui.pivot_offset = Vector2(CARD_W * 0.5, CARD_H * 0.5)
+		
+		# Connect hover signals
+		ui.card_hovered.connect(_on_card_hovered.bind(ui))
+		ui.card_unhovered.connect(_on_card_unhovered.bind(ui))
+		
+		# Animate to hand position with delay
+		var tw: Tween = create_tween()
+		tw.tween_interval(deal_delay * i)
+		tw.chain().tween_property(ui, "position", final_pos, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw.parallel().tween_property(ui, "rotation_degrees", rot_deg, 0.3)
+		tw.parallel().tween_property(ui, "scale", Vector2.ONE, 0.3)
+		tw.parallel().tween_property(ui, "modulate:a", 1.0, 0.2)
+		
+		# Call completion after last card
+		if i == cards.size() - 1 and on_complete.is_valid():
+			tw.chain().tween_callback(on_complete)

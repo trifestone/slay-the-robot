@@ -3,14 +3,14 @@
 [ext_resource type="Script" path="res://ui/battle/player_ui.gd" id="1_playerui"]
 
 [node name="PlayerUI" type="Control"]
-custom_minimum_size = Vector2(200, 224)
+custom_minimum_size = Vector2(250, 224)
 mouse_filter = 2
 script = ExtResource("1_playerui")
 
 [node name="NameLabel" type="Label" parent="."]
 offset_left = 0.0
 offset_top = 0.0
-offset_right = 200.0
+offset_right = 250.0
 offset_bottom = 20.0
 text = "Player"
 horizontal_alignment = 1
@@ -33,20 +33,65 @@ color = Color(0.45, 0.6, 0.8, 1)
 mouse_filter = 2
 
 [node name="HpLabel" type="Label" parent="."]
-offset_left = 0.0
-offset_top = 180.0
-offset_right = 200.0
-offset_bottom = 200.0
+offset_left = 20.0
+offset_top = 178.0
+offset_right = 180.0
+offset_bottom = 194.0
 text = "HP 80/80"
 horizontal_alignment = 1
 mouse_filter = 2
 
 [node name="HpBar" type="ProgressBar" parent="."]
 offset_left = 20.0
-offset_top = 204.0
+offset_top = 196.0
 offset_right = 180.0
-offset_bottom = 216.0
+offset_bottom = 208.0
 max_value = 1.0
 value = 1.0
 show_percentage = false
 mouse_filter = 2
+
+[node name="ShieldIcon" type="Control" parent="."]
+offset_left = 186.0
+offset_top = 68.0
+offset_right = 234.0
+offset_bottom = 108.0
+
+[node name="ShieldBg" type="ColorRect" parent="ShieldIcon"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.25, 0.45, 0.55, 1)
+
+[node name="ShieldInner" type="ColorRect" parent="ShieldIcon"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 44.0
+offset_bottom = 36.0
+color = Color(0.35, 0.65, 0.75, 1)
+
+[node name="ShieldCross" type="ColorRect" parent="ShieldIcon"]
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 32.0
+offset_bottom = 32.0
+color = Color(0.55, 0.85, 0.95, 1)
+
+[node name="BlockLabel" type="Label" parent="."]
+offset_left = 180.0
+offset_top = 48.0
+offset_right = 240.0
+offset_bottom = 68.0
+text = "格挡 0"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="BlockBar" type="ProgressBar" parent="."]
+offset_left = 188.0
+offset_top = 112.0
+offset_right = 232.0
+offset_bottom = 120.0
+max_value = 20.0
+value = 0.0
+show_percentage = false
+mouse_filter = 2
+theme_override_colors/fill_color = Color(0.25, 0.75, 0.45, 1)

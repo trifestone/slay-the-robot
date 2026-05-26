@@ -83,10 +83,15 @@ HTML reports land in `src/reports/report_N/`.
 
 ## Project status
 
-Early-development prototype. The core battle loop, trait reaction system, and
-single-room battle UI are functional; meta-systems (map, camp, shop, events)
-are partially wired. See [`docs/issues/`](./docs/issues) for the active ticket
-backlog.
+Early-development prototype with the following complete:
+- ✅ Core battle loop, trait reaction system, single-room battle UI
+- ✅ Multi-target selection, turn resolution panel, VFX
+- ✅ Tree map node selection (StS-style)
+- ✅ Camp (inventory + drag-drop mount/dismantle)
+- ✅ Shop (two-column cards + traits + heal)
+- ✅ Reforge (base slot change with cost)
+
+Next up: events, meta-progression (unlock/ascension). See [`docs/issues/`](./docs/issues) for the active ticket backlog.
 
 ---
 

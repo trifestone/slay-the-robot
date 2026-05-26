@@ -46,16 +46,24 @@ func _on_gui_input(event: InputEvent) -> void:
 			enemy_clicked.emit()
 
 
-## Bind enemy + hp + intent value. Re-renders all subviews.
-func bind(enemy: Resource, hp: int, max_hp: int, intent_value: int = 0, locale: String = "zh_CN", sprite: Texture2D = null) -> void:
+## Bind enemy + hp + intent. Re-renders all subviews.
+## intent_str: "Attack" | "Block" | "Buff" | "Debuff" | "Charge" | "MegaAttack"
+## intent_value: numeric value (damage amount, block amount, etc.)
+func bind(enemy: Resource, hp: int, max_hp: int, intent_str: String = "Attack",
+		  intent_value: int = 0, locale: String = "zh_CN", sprite: Texture2D = null) -> void:
 	_enemy = enemy
 	_hp = hp
 	_max_hp = max_hp
 	_locale = locale
-	_render_intent(intent_value)
+	_render_intent(intent_str, intent_value)
 	_render_hp()
 	_render_carried()
 	set_sprite(sprite)
+
+
+## Update the intent display (call when enemy changes intent).
+func update_intent(intent_str: String, value: int) -> void:
+	_render_intent(intent_str, value)
 
 
 ## Assign a sprite texture to the enemy body. Pass null to show the fallback color.
@@ -63,16 +71,10 @@ func set_sprite(tex: Texture2D = null) -> void:
 	_body_sprite.texture = tex
 
 
-## Update only the HP labels/bar (no need to rebuild trait row mid-turn).
-func update_hp(new_hp: int) -> void:
-	_hp = new_hp
-	_render_hp()
-
-
-func _render_intent(value: int) -> void:
-	if _enemy == null or _intent_widget == null:
+func _render_intent(intent_str: String, value: int) -> void:
+	if _intent_widget == null:
 		return
-	_intent_widget.bind(_enemy.intent, value, _locale)
+	_intent_widget.bind(intent_str, value, _locale)
 
 
 func _render_hp() -> void:

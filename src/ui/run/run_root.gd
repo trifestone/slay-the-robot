@@ -236,29 +236,35 @@ func _on_return_to_menu() -> void:
 # Helpers
 # ---------------------------------------------------------------------------
 
+## Build starting deck guaranteeing at least one Block card.
 func _starting_deck() -> Array:
-	# Mixed starter deck: 5 cards, each composed of 1-3 traits picked
-	# deterministically from a small hard-coded pool. Per-card seeding is
-	# derived from the run's wall-clock seed so identical seeds yield
-	# identical starting decks (useful for repro + tests). The pool is
-	# intentionally small so the player sees a coherent set of openings
-	# without immediately drowning in random combos.
 	var rng := RandomNumberGenerator.new()
-	# Use Time-based seed identical to start_new_run() so the deck rolls
-	# alongside the rest of the run state.
 	rng.seed = int(Time.get_unix_time_from_system())
 	var pool: Array = _starter_trait_pool()
 	var deck: Array = []
+	var has_block: bool = false
 	for i in range(5):
 		var slot_count: int = rng.randi_range(1, 3)
 		var traits: Array = []
 		for j in range(slot_count):
 			traits.append(pool[rng.randi_range(0, pool.size() - 1)])
-		deck.append(_make_starter_card_from_traits(traits))
+		var card = _make_starter_card_from_traits(traits)
+		deck.append(card)
+		# Check if this card has any Block trait
+		for slot in card.slots:
+			if slot != null and slot.trait_ref != null:
+				if slot.trait_ref.effect_type == "Block":
+					has_block = true
+					break
+	# Guarantee at least one block card
+	if not has_block:
+		var guard_traits: Array = [_mk_trait("guard", 0, "Block", 5, "防御")]
+		deck[0] = _make_starter_card_from_traits(guard_traits)
 	return deck
 
 
 ## Six hand-picked traits that play nicely together for a first run.
+## Added extra Block traits and guarantee at least one Block card in deck.
 func _starter_trait_pool() -> Array:
 	var pool: Array = []
 	pool.append(_mk_trait("slash",  0, "Damage", 6,  "斩击"))
@@ -267,6 +273,9 @@ func _starter_trait_pool() -> Array:
 	pool.append(_mk_trait("focus",  0, "Draw",   1,  "凝神"))
 	pool.append(_mk_trait("leech",  0, "Heal",   2,  "汲取"))
 	pool.append(_mk_trait("ember",  0, "Damage", 3,  "余烬"))
+	# Extra block traits for better variety
+	pool.append(_mk_trait("shield", 0, "Block",  4,  "护盾"))
+	pool.append(_mk_trait("barrier",0, "Block",  6,  "屏障"))
 	return pool
 
 

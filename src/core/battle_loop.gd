@@ -127,7 +127,11 @@ func play_card(state: Object, card: Resource, target) -> void:
 	# Remove from hand before emitting (some traits inspect hand size)
 	state.hand.remove_at(idx)
 
+	# Move to discard immediately so Draw effects can reshuffle it when deck is empty.
+	state.discard.append(card)
+
 	# Emit OnPlay — triggers trait effects via emit kernel
+	var log_size_before: int = state.trait_fire_log.size()
 	var emitter: Object = EmitScript.new()
 	emitter.emit(state, Enums.TriggerEvent.OnPlay, card)
 
@@ -142,15 +146,8 @@ func play_card(state: Object, card: Resource, target) -> void:
 			state.primary_enemy_idx = clamped
 			state.sync_primary_enemy()
 
-	# Apply simple Damage trait effects to enemy. Single-target damage hits
-	# the current primary; when the primary dies the next alive enemy is
-	# promoted before further damage from the same play_card resolves.
-	for entry in state.trait_fire_log:
-		if entry.get("effect_type", "") == "Damage" and entry.get("event", -1) == Enums.TriggerEvent.OnPlay:
-			var dmg: int = entry.get("effect_value", 0)
-			if dmg <= 0:
-				continue
-			_apply_damage_to_primary(state, dmg)
+	# Apply all OnPlay trait effects (Damage, Block, Heal, Draw, etc.)
+	_apply_trait_effects(state, Enums.TriggerEvent.OnPlay, log_size_before)
 
 	# Restore primary if target was an int and the original primary is still alive.
 	if typeof(target) == TYPE_INT and state.enemies != null and not state.enemies.is_empty():
@@ -159,9 +156,6 @@ func play_card(state: Object, card: Resource, target) -> void:
 			state.sync_primary_enemy()
 		else:
 			state.advance_primary_if_dead()
-
-	# Move to discard
-	state.discard.append(card)
 
 	state.battle_log.append("play_card energy_left=%d hand_size=%d discard_size=%d" % [
 		state.energy, state.hand.size(), state.discard.size()])
@@ -177,8 +171,10 @@ func end_turn(state: Object) -> void:
 
 	# Emit EndTurn for each card in hand (for EndTurn traits)
 	var emitter: Object = EmitScript.new()
+	var endturn_log_before: int = state.trait_fire_log.size()
 	for card in state.hand.duplicate():
 		emitter.emit(state, Enums.TriggerEvent.EndTurn, card)
+	_apply_trait_effects(state, Enums.TriggerEvent.EndTurn, endturn_log_before)
 
 	state.battle_log.append("end_turn turn=%d" % state.turn)
 
@@ -203,7 +199,7 @@ func end_turn(state: Object) -> void:
 		state.discard.append(card)
 	state.hand.clear()
 
-	# Reset per-turn state (cooldowns)
+	# Reset per-turn state (cooldowns + block)
 	state.reset_per_turn()
 
 	# Regen energy (hard-set, no accumulation per PRD §4.2)
@@ -213,8 +209,10 @@ func end_turn(state: Object) -> void:
 	_draw_n(state, DRAW_PER_TURN)
 
 	# Emit StartTurn for each card now in hand
+	var startturn_log_before: int = state.trait_fire_log.size()
 	for card in state.hand.duplicate():
 		emitter.emit(state, Enums.TriggerEvent.StartTurn, card)
+	_apply_trait_effects(state, Enums.TriggerEvent.StartTurn, startturn_log_before)
 
 	state.battle_log.append("start_turn turn=%d energy=%d hand_size=%d deck_size=%d" % [
 		state.turn, state.energy, state.hand.size(), state.deck.size()])
@@ -285,20 +283,110 @@ func _apply_intent(state: Object) -> void:
 	if state.enemies == null or state.enemies.is_empty():
 		if state.enemy_hp <= 0:
 			return
-		var dmg: int = _get_intent_damage(state)
-		state.player_hp = max(0, state.player_hp - dmg)
-		state.battle_log.append("enemy_attack dmg=%d player_hp=%d" % [dmg, state.player_hp])
+		_execute_single_enemy_intent(state)
 		return
 
-	var total: int = 0
-	for entry in state.enemies:
+	# Multi-enemy: each enemy executes its own intent.
+	for i in range(state.enemies.size()):
+		var entry: Dictionary = state.enemies[i]
 		if int(entry.get("hp", 0)) <= 0:
 			continue
-		total += int(entry.get("intent_damage", DEFAULT_INTENT_DAMAGE))
-	if total <= 0:
+		_execute_enemy_intent(state, entry, i)
+		# Advance this enemy's intent for next turn.
+		var enemy: Resource = entry.get("enemy", null)
+		if enemy != null and enemy.has_method("advance_intent"):
+			enemy.advance_intent(state.rng)
+			entry["intent"] = enemy.intent
+			entry["intent_damage"] = enemy.intent_damage
+
+
+## Execute intent for a single enemy (legacy mode).
+func _execute_single_enemy_intent(state: Object) -> void:
+	var enemy: Resource = state.enemy
+	if enemy == null:
 		return
-	state.player_hp = max(0, state.player_hp - total)
-	state.battle_log.append("enemy_attack dmg=%d player_hp=%d" % [total, state.player_hp])
+
+	var intent: String = enemy.intent if "intent" in enemy else "Attack"
+	match intent:
+		"Block":
+			var block_amt: int = enemy.intent_block if "intent_block" in enemy else 5
+			state.enemy_block = state.enemy_block + block_amt if "enemy_block" in state else block_amt
+			state.battle_log.append("enemy_block amount=%d" % block_amt)
+		"Buff":
+			var buff: int = enemy.buff_power if "buff_power" in enemy else 2
+			if enemy.has_method("_add_strength"):
+				enemy._add_strength(buff)
+			else:
+				enemy.strength = enemy.strength + buff if "strength" in enemy else buff
+			state.battle_log.append("enemy_buff strength=%d" % buff)
+		"Debuff":
+			var debuff: int = enemy.debuff_power if "debuff_power" in enemy else 1
+			state.player_vulnerable = state.player_vulnerable + debuff if "player_vulnerable" in state else debuff
+			state.battle_log.append("enemy_debuff vulnerable=%d" % debuff)
+		"Charge":
+			state.battle_log.append("enemy_charge")
+		"MegaAttack":
+			var mega_dmg: int = (enemy.intent_damage if "intent_damage" in enemy else DEFAULT_INTENT_DAMAGE) * 2
+			_enemy_deal_damage(state, mega_dmg)
+		_:	# Attack (default)
+			var dmg: int = _get_intent_damage(state)
+			_enemy_deal_damage(state, dmg)
+
+	# Advance intent for next turn.
+	if enemy.has_method("advance_intent"):
+		enemy.advance_intent(state.rng)
+
+
+## Execute intent for a specific enemy entry.
+func _execute_enemy_intent(state: Object, entry: Dictionary, idx: int) -> void:
+	var enemy: Resource = entry.get("enemy", null)
+	if enemy == null:
+		return
+
+	var intent: String = entry.get("intent", "Attack")
+	var intent_dmg: int = entry.get("intent_damage", DEFAULT_INTENT_DAMAGE)
+
+	match intent:
+		"Block":
+			var block_amt: int = enemy.intent_block if "intent_block" in enemy else 5
+			entry["block"] = int(entry.get("block", 0)) + block_amt
+			state.battle_log.append("enemy_%d_block amount=%d" % [idx, block_amt])
+		"Buff":
+			var buff: int = enemy.buff_power if "buff_power" in enemy else 2
+			if enemy.has_method("_add_strength"):
+				enemy._add_strength(buff)
+			else:
+				enemy.strength = enemy.strength + buff if "strength" in enemy else buff
+			state.battle_log.append("enemy_%d_buff strength=%d" % [idx, buff])
+		"Debuff":
+			var debuff: int = enemy.debuff_power if "debuff_power" in enemy else 1
+			state.player_vulnerable = state.player_vulnerable + debuff if "player_vulnerable" in state else debuff
+			state.battle_log.append("enemy_%d_debuff vulnerable=%d" % [idx, debuff])
+		"Charge":
+			state.battle_log.append("enemy_%d_charge" % idx)
+		"MegaAttack":
+			var mega_dmg: int = intent_dmg * 2
+			_enemy_deal_damage_to_player(state, mega_dmg, idx)
+		_:	# Attack (default)
+			_enemy_deal_damage_to_player(state, intent_dmg, idx)
+
+
+## Enemy deals damage to player (single enemy mode).
+func _enemy_deal_damage(state: Object, base_dmg: int) -> void:
+	var absorbed: int = min(state.player_block, base_dmg)
+	state.player_block -= absorbed
+	var net: int = base_dmg - absorbed
+	state.player_hp = max(0, state.player_hp - net)
+	state.battle_log.append("enemy_attack dmg=%d blocked=%d player_hp=%d block=%d" % [base_dmg, absorbed, state.player_hp, state.player_block])
+
+
+## Enemy deals damage to player (multi-enemy mode).
+func _enemy_deal_damage_to_player(state: Object, base_dmg: int, enemy_idx: int) -> void:
+	var absorbed: int = min(state.player_block, base_dmg)
+	state.player_block -= absorbed
+	var net: int = base_dmg - absorbed
+	state.player_hp = max(0, state.player_hp - net)
+	state.battle_log.append("enemy_%d_attack dmg=%d blocked=%d player_hp=%d" % [enemy_idx, base_dmg, absorbed, state.player_hp])
 
 
 ## Discard cards from hand when hand size exceeds HAND_LIMIT (>= 11 → discard extras).
@@ -361,10 +449,6 @@ func _apply_damage_to_primary(state: Object, dmg: int) -> void:
 		_record_damage_event(state, -1, dmg, 0)
 		return
 
-	# Reconcile any external mutation of enemy_hp (tests may override it) so
-	# the entry view stays the source of truth.
-	state.sync_primary_hp_into_entry()
-
 	var idx: int = clamp(int(state.primary_enemy_idx), 0, state.enemies.size() - 1)
 	var entry: Dictionary = state.enemies[idx]
 
@@ -399,3 +483,135 @@ func _record_damage_event(state: Object, target_idx: int, dmg: int, blocked: int
 		"dmg":     dmg,
 		"blocked": blocked,
 	})
+
+
+# ---------------------------------------------------------------------------
+# Trait effect application (Bug fix: all effect types, not just Damage)
+# ---------------------------------------------------------------------------
+
+## Apply all unprocessed trait effects from trait_fire_log that match the given event.
+## Uses start_idx to avoid re-processing effects from previous emits.
+func _apply_trait_effects(state: Object, event_filter: int, start_idx: int = 0) -> void:
+	for i in range(start_idx, state.trait_fire_log.size()):
+		var entry: Dictionary = state.trait_fire_log[i]
+		if entry.get("event", -1) != event_filter:
+			continue
+
+		var effect_type: String = entry.get("effect_type", "")
+		var source: String = entry.get("source", "")
+		var effect_value: int = entry.get("effect_value", 0)
+
+		if source == "reaction":
+			var parsed: Dictionary = _parse_reaction_effect(effect_type)
+			if parsed["damage"] > 0:
+				_apply_damage_to_primary(state, parsed["damage"])
+			if parsed["block"] > 0:
+				_apply_block_to_player(state, parsed["block"])
+			if parsed["heal"] > 0:
+				_apply_heal_to_player(state, parsed["heal"])
+			if parsed["draw"] > 0:
+				_draw_n(state, parsed["draw"])
+			if parsed["heal_percent"] > 0:
+				_apply_heal_percent_to_player(state, parsed["heal_percent"])
+		else:
+			match effect_type:
+				"Damage":
+					if effect_value > 0:
+						_apply_damage_to_primary(state, effect_value)
+				"Block":
+					_apply_block_to_player(state, effect_value)
+				"HealSelfPercent":
+					_apply_heal_percent_to_player(state, effect_value)
+				"Draw":
+					_draw_n(state, effect_value)
+				"Heal":
+					_apply_heal_to_player(state, effect_value)
+				"Buff", "Apply", "Spawn":
+					# Stubs for v0 — logged but not fully implemented
+					state.battle_log.append("effect_stub type=%s value=%d" % [effect_type, effect_value])
+
+
+## Parse a reaction override_effect string like "Damage(12, Fire) + AOE_Splash(4)"
+## into a Dictionary of extractable numeric effects.
+## Returns: { "damage": int, "block": int, "heal": int, "draw": int, "heal_percent": int }
+func _parse_reaction_effect(effect_str: String) -> Dictionary:
+	var result := {"damage": 0, "block": 0, "heal": 0, "draw": 0, "heal_percent": 0}
+
+	# Damage(N, ...) or Damage(N)
+	var dmg_idx := effect_str.find("Damage(")
+	if dmg_idx != -1:
+		var start := dmg_idx + 7
+		var end := effect_str.find(")", start)
+		if end != -1:
+			var num_str := effect_str.substr(start, end - start)
+			var comma := num_str.find(",")
+			if comma != -1:
+				num_str = num_str.substr(0, comma)
+			result["damage"] = num_str.to_int()
+
+	# Block(N, ...) or Block(N)
+	var block_idx := effect_str.find("Block(")
+	if block_idx != -1:
+		var start := block_idx + 6
+		var end := effect_str.find(")", start)
+		if end != -1:
+			var num_str := effect_str.substr(start, end - start)
+			var comma := num_str.find(",")
+			if comma != -1:
+				num_str = num_str.substr(0, comma)
+			result["block"] = num_str.to_int()
+
+	# Heal(N) — must come before HealSelf to avoid collision
+	var heal_idx := effect_str.find("Heal(")
+	if heal_idx != -1:
+		var start := heal_idx + 5
+		var end := effect_str.find(")", start)
+		if end != -1:
+			var num_str := effect_str.substr(start, end - start)
+			var val := num_str.to_int()
+			# Distinguish Heal(N) from HealSelf(N%) by checking for "%"
+			if effect_str.find("HealSelf(") == -1 or heal_idx != effect_str.find("HealSelf("):
+				result["heal"] = val
+
+	# HealSelf(N%)
+	var heal_pct_idx := effect_str.find("HealSelf(")
+	if heal_pct_idx != -1:
+		var start := heal_pct_idx + 9
+		var pct_end := effect_str.find("%", start)
+		if pct_end != -1:
+			var num_str := effect_str.substr(start, pct_end - start)
+			result["heal_percent"] = num_str.to_int()
+
+	# Draw(N)
+	var draw_idx := effect_str.find("Draw(")
+	if draw_idx != -1:
+		var start := draw_idx + 5
+		var end := effect_str.find(")", start)
+		if end != -1:
+			var num_str := effect_str.substr(start, end - start)
+			result["draw"] = num_str.to_int()
+
+	return result
+
+
+func _apply_block_to_player(state: Object, amount: int) -> void:
+	if amount <= 0:
+		return
+	state.player_block += amount
+	state.battle_log.append("player_gain_block amount=%d block=%d" % [amount, state.player_block])
+
+
+func _apply_heal_to_player(state: Object, amount: int) -> void:
+	if amount <= 0:
+		return
+	var before: int = state.player_hp
+	state.player_hp = min(state.max_hp, state.player_hp + amount)
+	var healed: int = state.player_hp - before
+	state.battle_log.append("player_heal amount=%d healed=%d hp=%d" % [amount, healed, state.player_hp])
+
+
+func _apply_heal_percent_to_player(state: Object, percent: int) -> void:
+	if percent <= 0:
+		return
+	var amount: int = max(1, int(state.max_hp * percent / 100.0))
+	_apply_heal_to_player(state, amount)
