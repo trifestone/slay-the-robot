@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1779436760057,
+  "lastScanned": 1779762848022,
   "projectRoot": "C:\\Users\\zuolei01\\Documents\\MyGame",
   "techStack": {
     "languages": [],
@@ -28,7 +28,10 @@
       "docs",
       "src"
     ],
-    "gitBranches": null
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
   },
   "customNotes": [],
   "directoryMap": {
@@ -36,7 +39,7 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 1,
-      "lastAccessed": 1779436760034,
+      "lastAccessed": 1779762847980,
       "keyFiles": [
         "CONTEXT.md"
       ]
@@ -45,7 +48,7 @@
       "path": "prototype",
       "purpose": null,
       "fileCount": 5,
-      "lastAccessed": 1779436760034,
+      "lastAccessed": 1779762847982,
       "keyFiles": [
         "PROTOTYPE_REPORT.md",
         "reaction_frequency.csv",
@@ -58,7 +61,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 11,
-      "lastAccessed": 1779436760035,
+      "lastAccessed": 1779762847982,
       "keyFiles": [
         "generate_tests.py",
         "icon.svg",
@@ -71,7 +74,7 @@
       "path": "tools",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1779436760035,
+      "lastAccessed": 1779762847983,
       "keyFiles": [
         "check_license.ps1"
       ]
@@ -80,7 +83,7 @@
       "path": "src\\data",
       "purpose": "Data files",
       "fileCount": 23,
-      "lastAccessed": 1779436760037,
+      "lastAccessed": 1779762847984,
       "keyFiles": [
         "card.gd",
         "card.gd.uid",
@@ -88,175 +91,6 @@
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "src\\ui\\battle\\battle_scene.gd",
-      "accessCount": 12,
-      "lastAccessed": 1779455382146,
-      "type": "file"
-    },
-    {
-      "path": "src\\ui\\battle\\vfx_layer.gd",
-      "accessCount": 10,
-      "lastAccessed": 1779454286487,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 8,
-      "lastAccessed": 1779692365906,
-      "type": "directory"
-    },
-    {
-      "path": "src",
-      "accessCount": 5,
-      "lastAccessed": 1779455319332,
-      "type": "directory"
-    },
-    {
-      "path": "src\\ui\\hover_preview.tscn",
-      "accessCount": 3,
-      "lastAccessed": 1779455157136,
-      "type": "file"
-    },
-    {
-      "path": "src\\ui\\run\\run_root.gd",
-      "accessCount": 3,
-      "lastAccessed": 1779455351134,
-      "type": "file"
-    },
-    {
-      "path": "src\\tests\\test_battle_scene.gd",
-      "accessCount": 3,
-      "lastAccessed": 1779455391482,
-      "type": "directory"
-    },
-    {
-      "path": "src\\ui\\camp\\camp_scene.gd",
-      "accessCount": 2,
-      "lastAccessed": 1779436781138,
-      "type": "file"
-    },
-    {
-      "path": "src\\tests\\test_battle_loop.gd",
-      "accessCount": 2,
-      "lastAccessed": 1779437809032,
-      "type": "file"
-    },
-    {
-      "path": "src\\tests\\golden\\battle_seed_42.hash",
-      "accessCount": 2,
-      "lastAccessed": 1779437870910,
-      "type": "file"
-    },
-    {
-      "path": "src\\ui\\battle\\battle_scene.tscn",
-      "accessCount": 2,
-      "lastAccessed": 1779453501664,
-      "type": "file"
-    },
-    {
-      "path": "src\\data",
-      "accessCount": 2,
-      "lastAccessed": 1779454932124,
-      "type": "directory"
-    },
-    {
-      "path": "src\\ui",
-      "accessCount": 2,
-      "lastAccessed": 1779455126616,
-      "type": "directory"
-    },
-    {
-      "path": "src\\ui\\hover_preview_view.gd",
-      "accessCount": 2,
-      "lastAccessed": 1779455164757,
-      "type": "file"
-    },
-    {
-      "path": "src\\tests",
-      "accessCount": 2,
-      "lastAccessed": 1779455397682,
-      "type": "directory"
-    },
-    {
-      "path": "src\\ui\\trait_icon.gd",
-      "accessCount": 2,
-      "lastAccessed": 1779455843867,
-      "type": "file"
-    },
-    {
-      "path": "src\\reports\\report_81\\results.xml",
-      "accessCount": 1,
-      "lastAccessed": 1779437792783,
-      "type": "file"
-    },
-    {
-      "path": "src\\core\\battle_loop.gd",
-      "accessCount": 1,
-      "lastAccessed": 1779437824417,
-      "type": "file"
-    },
-    {
-      "path": "src\\core\\anim_signaler.gd",
-      "accessCount": 1,
-      "lastAccessed": 1779453220857,
-      "type": "file"
-    },
-    {
-      "path": "src\\vfx\\heal_pop.gd",
-      "accessCount": 1,
-      "lastAccessed": 1779453221113,
-      "type": "file"
-    },
-    {
-      "path": "src\\core\\battle_state.gd",
-      "accessCount": 1,
-      "lastAccessed": 1779453249417,
-      "type": "file"
-    },
-    {
-      "path": "src\\ui\\enemy_ui.gd",
-      "accessCount": 1,
-      "lastAccessed": 1779453330521,
-      "type": "file"
-    },
-    {
-      "path": "src\\core",
-      "accessCount": 1,
-      "lastAccessed": 1779453574856,
-      "type": "directory"
-    },
-    {
-      "path": "src\\vfx\\reaction_burst.gd",
-      "accessCount": 1,
-      "lastAccessed": 1779454899338,
-      "type": "file"
-    },
-    {
-      "path": "src\\README.md",
-      "accessCount": 1,
-      "lastAccessed": 1779692372491,
-      "type": "file"
-    },
-    {
-      "path": "NOTICE",
-      "accessCount": 1,
-      "lastAccessed": 1779692374190,
-      "type": "file"
-    },
-    {
-      "path": "docs",
-      "accessCount": 1,
-      "lastAccessed": 1779692406388,
-      "type": "directory"
-    },
-    {
-      "path": "README.md",
-      "accessCount": 1,
-      "lastAccessed": 1779692449503,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }

@@ -23,7 +23,12 @@
       "Bash(git remote *)",
       "Bash(ssh -T -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519 git@github.com)",
       "Bash(echo \"exit=$?\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git fetch *)"
     ]
   }
 }

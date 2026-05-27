@@ -24,3 +24,9 @@ dist/
 # OS
 Thumbs.db
 .DS_Store
+
+# Editor swap files
+*.swp
+*.swo
+.*.swp
+.*.swo
